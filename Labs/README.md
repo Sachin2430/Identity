@@ -1,36 +1,30 @@
 # Identity Labs
 
-One lab per cluster of modules, built as you reach it — not all 33 modules upfront. Each lab is **predict → run → explain**: guess first, do the real exercise, then explain it back in your own words. These are the full, standalone version of testing your learning; the short inline "Try it" boxes inside `../identity-learning.html` stay as quick prompts, but **these labs are the ones done in the evening Revision slot**, not the morning teaching block.
+**Not every module gets a lab** (his rule, 2026-10-01) — only where there's an actual technical artifact to produce: a real token to decode, a real command to run, a real tool to use, a real config to inspect. A module that's pure vocabulary or a reading/mapping exercise doesn't get one; the course's own inline "Try it" box (in `../identity-learning.html`) is enough there.
 
-**Keep every lab minimal but reproducible** (his rule, 2026-10-01): a fixed, concrete procedure with a single clear deliverable — a filled table, a specific decoded token, one incident record — not open-ended prose. Anyone redoing the same lab on a different day should land on the same kind of output.
+**Keep every lab minimal but reproducible:** a fixed, concrete procedure with a single clear deliverable — a decoded token, a filled-in finding, a query result — not open-ended prose or reflection questions. Anyone redoing the same lab on a different day should land on the same kind of output.
 
-Numbered to match the course's own 6 phases. A lab is only written once its modules have actually been taught — don't jump ahead.
+Labs are numbered in the order you'll reach them, not 1:1 with module numbers — most modules don't get one. **Done in the evening Revision slot**, not the morning teaching block. Built when you actually reach its module, not upfront.
 
-| # | Lab | Covers | Status |
-|---|---|---|---|
-| 01 | [Identity Inventory](lab-01-identity-inventory.md) | M1 — What is an identity? | ✅ Written |
-| 02 | The Four Questions, Live | M2 — IAAA | Not yet — M2 not taught |
-| 03 | Who Talks to Whom, Credential Audit | M3–4 — interaction patterns, credentials | Not yet |
-| 04 | MFA Strength Check | M5 — Authentication & MFA | Not yet |
-| 05 | Authorization Models in the Wild | M6 — Authorization | Not yet |
-| 06 | Directory & Lifecycle Trace | M7, M9 — directories, JML lifecycle | Not yet |
-| 07 | Windows Auth Deep Dive | M8 — NTLM/Kerberos | Not yet (needs a Windows box — see the MVP track's UTM VM) |
-| 08 | SSO & SAML Trace | M10–11 — SSO, SAML | Not yet |
-| 09 | OAuth/OIDC Token Decode | M12 — OAuth 2.0, OIDC | Not yet |
-| 10 | Governance, PAM/PIM, CIAM Mapping | M13–15 | Not yet |
-| 11 | Attack Chain Walkthrough | M16–17 — attacks, attack chain | Not yet |
-| 12 | Defending & Tier 0 Audit | M18–19 — Zero Trust, ITDR, ISPM, control plane | Not yet |
-| 13 | Detection & Incident Tabletop | M20–21 | Not yet |
-| 14 | NHI Audit | M22–24 — non-human identities | Not yet |
-| 15 | AI Agent & MCP Permission Audit | M26–27 — AI agents, securing agents | Not yet |
-| 16 | Deepfake-Resistant Procedure + Shadow AI | M25, M28 | Not yet |
-| 17 | Cloud IAM & Standards Mapping | M29–30 | Not yet |
-| 18 | Capstone — Design Your Identity Program | M31–33 | Not yet (this is Module 33 itself — the lab *is* the capstone) |
+| # | Lab | Module | Why this one gets a real lab | Status |
+|---|---|---|---|---|
+| 01 | Set up a passkey | M5 — Authentication & MFA | A real phishing-resistant credential you actually create | Not yet |
+| 02 | Kerberos ticket inspection (`klist`) | M8 — NTLM/Kerberos | A real TGT/service ticket to inspect | Parked — needs the Windows VM (see the MVP track's UTM setup) |
+| 03 | SAML login trace | M10–11 — SSO, SAML | SAML-tracer against a real SSO login, read the actual assertion | Not yet |
+| 04 | Decode a real OIDC ID token | M12 — OAuth 2.0, OIDC | jwt.io against a token from an app you actually use | Not yet |
+| 05 | Attack path mapping | M17 — The attack chain | BloodHound sample data or GOAD — a real graph, not a diagram | Not yet |
+| 06 | Write a detection query | M20 — Detection engineering | A real KQL/SPL-style query against sample sign-in logs | Not yet |
+| 07 | Incident response tabletop | M21 — Incident response | A live, interactive simulated incident — not a worksheet | Not yet |
+| 08 | Audit your own GitHub tokens/OAuth apps | M23 — How NHIs break | Your actual GitHub Settings → Applications page, right now | Not yet |
+| 09 | Audit your own MCP connector permissions | M27 — Securing AI agents | Your actual Claude Desktop/Code connector list, right now | Not yet |
+| 10 | Read a real cloud IAM policy | M29 — Cloud IAM | A real AWS/Azure IAM JSON policy, annotated clause by clause | Not yet |
+| — | Capstone | M33 | The module itself *is* the lab — no separate entry needed | — |
+
+**Modules not listed above deliberately have no lab** — M1–4, 6–7, 9, 13–16, 18–19, 22, 24–26, 28, 30–32 are vocabulary, classification or reading/mapping exercises. The inline "Try it" box already covers them where one exists.
 
 ## How a lab gets written
 
-When you reach a module cluster above, say so in a `/identity` session and the next lab gets built then — grounded in what was actually taught, not generic advice. Each lab file has:
-1. **Predict** — a short guess before you start, so you notice what you got wrong.
-2. **Run** — the real, hands-on exercise. Free tools only (developer tenants, your own accounts, browser dev tools, `.claude/tools`) unless you already have paid access to something.
-3. **Explain** — answer in your own words; this is what actually sticks.
-4. **Cross-check** — compare against the matching concept card in [`../identity.html`](../identity.html).
+When you reach one of the modules above, say so in a `/identity` session and that lab gets built then, grounded in what was actually taught. Each lab:
+1. States the **one concrete deliverable** up front (a decoded token, a filled finding, a query result).
+2. Uses **free tools only** unless you already have paid access to something.
+3. Ends with a cross-check against the matching concept in [`../identity.html`](../identity.html).
