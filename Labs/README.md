@@ -1,30 +1,56 @@
 # Identity Labs
 
-**Not every module gets a lab** (his rule, 2026-10-01) — only where there's an actual technical artifact to produce: a real token to decode, a real command to run, a real tool to use, a real config to inspect. A module that's pure vocabulary or a reading/mapping exercise doesn't get one; the course's own inline "Try it" box (in `../identity-learning.html`) is enough there.
+**Not every module gets a lab** — only where there's a real technical artifact to produce. A module that's pure vocabulary or a reading/mapping exercise doesn't get one; the course's own inline "Try it" box is enough there.
 
-**Keep every lab minimal but reproducible:** a fixed, concrete procedure with a single clear deliverable — a decoded token, a filled-in finding, a query result — not open-ended prose or reflection questions. Anyone redoing the same lab on a different day should land on the same kind of output.
+**The labs are connected, not a bag of isolated exercises.** Four threads, each building on its own earlier labs instead of starting cold every time. Every lab below was checked against one bar: **can you actually click through it live, on a real free application, and reproduce it on demand** — not read about it, not run it against sample data someone else generated.
 
-Labs are numbered in the order you'll reach them, not 1:1 with module numbers — most modules don't get one. **Done in the evening Revision slot**, not the morning teaching block. Built when you actually reach its module, not upfront.
+**Keep every lab minimal but reproducible:** one concrete deliverable per lab, free tools only.
 
-| # | Lab | Module | Why this one gets a real lab | Status |
+## Thread A: the Priya tenant (Microsoft Entra ID, free)
+
+**One-time setup, done as part of Lab 01** — the [Microsoft 365 Developer Program](https://developer.microsoft.com/microsoft-365/dev-program) gives a free sandbox tenant with Entra ID P2 (which is what unlocks PIM in Lab 02 — a paid feature everywhere else, free here). No credit card, auto-renews every 90 days with activity.
+
+| # | Lab | Module | Builds on | App |
 |---|---|---|---|---|
-| 01 | Set up a passkey | M5 — Authentication & MFA | A real phishing-resistant credential you actually create | Not yet |
-| 02 | Kerberos ticket inspection (`klist`) | M8 — NTLM/Kerberos | A real TGT/service ticket to inspect | Parked — needs the Windows VM (see the MVP track's UTM setup) |
-| 03 | SAML login trace | M10–11 — SSO, SAML | SAML-tracer against a real SSO login, read the actual assertion | Not yet |
-| 04 | Decode a real OIDC ID token | M12 — OAuth 2.0, OIDC | jwt.io against a token from an app you actually use | Not yet |
-| 05 | Attack path mapping | M17 — The attack chain | BloodHound sample data or GOAD — a real graph, not a diagram | Not yet |
-| 06 | Write a detection query | M20 — Detection engineering | A real KQL/SPL-style query against sample sign-in logs | Not yet |
-| 07 | Incident response tabletop | M21 — Incident response | A live, interactive simulated incident — not a worksheet | Not yet |
-| 08 | Audit your own GitHub tokens/OAuth apps | M23 — How NHIs break | Your actual GitHub Settings → Applications page, right now | Not yet |
-| 09 | Audit your own MCP connector permissions | M27 — Securing AI agents | Your actual Claude Desktop/Code connector list, right now | Not yet |
-| 10 | Read a real cloud IAM policy | M29 — Cloud IAM | A real AWS/Azure IAM JSON policy, annotated clause by clause | Not yet |
-| — | Capstone | M33 | The module itself *is* the lab — no separate entry needed | — |
+| 01 | Create the tenant + Priya, enroll her first passkey | M5 — Authentication & MFA | *(starts the thread)* | Entra ID (native) |
+| 02 | Make Priya PIM-eligible for a role, then activate it — real eligible→active, real audit entry | M14 — PAM/PIM | Lab 01's tenant + user | Entra ID PIM (native) |
+| 03 | Register a SAML app, SSO as Priya, capture the real assertion | M10–11 — SSO, SAML | Lab 01's user | **Azure AD SAML Toolkit** — Microsoft's free sample app built specifically for practicing SAML claims, not a placeholder |
+| 04 | Register an OAuth app, run the flow, decode Priya's real ID token | M12 — OAuth 2.0, OIDC | Lab 01's user | Entra app registration (native) + jwt.io |
+| 05 | Filter and export Priya's real sign-in logs — the ones Labs 01/03/04 just generated | M20 — Detection engineering | Labs 01, 03, 04's real log entries | **Light version (decided 2026-10-01):** the Entra portal's own Sign-in logs blade — filter, search, export. No Azure Log Analytics / KQL, no second Azure signup, no card required. Full KQL version stays an explicit later upgrade, not assumed. |
+| 06 | Incident tabletop: "Priya's session is compromised" — actually click **Revoke sessions** on the real user, review the real audit trail | M21 — Incident response | Everything above | Entra ID (native) |
 
-**Modules not listed above deliberately have no lab** — M1–4, 6–7, 9, 13–16, 18–19, 22, 24–26, 28, 30–32 are vocabulary, classification or reading/mapping exercises. The inline "Try it" box already covers them where one exists.
+## Thread B: on-prem AD — **parked for now (decided 2026-10-01)**
 
-## How a lab gets written
+Originally planned as Kerberos ticket inspection (M8) + attack-path mapping (M17), sharing one AD lab environment. **Corrected:** a bare Windows client (what the MVP track's UTM VM is) has no domain controller and no Kerberos realm — `klist` against it would show nothing real. A genuine version needs an actual small AD forest: [GOAD (Game of Active Directory)](https://github.com/Orange-Cyberdefense/GOAD), a free Vagrant+Ansible-deployed vulnerable domain, is the honest way to get real tickets for Lab 07 and real BloodHound data (via SharpHound) for Lab 08 from the *same* deployment. That's a heavier one-time setup than anything else here — parked until there's time to actually stand it up, not faked with a lighter substitute that wouldn't produce real data.
 
-When you reach one of the modules above, say so in a `/identity` session and that lab gets built then, grounded in what was actually taught. Each lab:
-1. States the **one concrete deliverable** up front (a decoded token, a filled finding, a query result).
-2. Uses **free tools only** unless you already have paid access to something.
-3. Ends with a cross-check against the matching concept in [`../identity.html`](../identity.html).
+| # | Lab | Module | Status |
+|---|---|---|---|
+| 07 | `klist` — inspect a real Kerberos TGT and service ticket | M8 — NTLM/Kerberos | Parked — needs GOAD |
+| 08 | BloodHound / SharpHound — map a real attack path to Domain Admin | M17 — Attack chain | Parked — needs GOAD, same deployment as 07 |
+
+## Thread C: your real footprint
+
+| # | Lab | Module | Builds on |
+|---|---|---|---|
+| 09 | Audit your actual GitHub tokens and OAuth app connections | M23 — How NHIs break | Your real GitHub account |
+| 10 | Audit your actual Claude Desktop/Code MCP connector permissions | M27 — Securing AI agents | Your real setup |
+
+## Thread D: cloud IAM (AWS)
+
+| # | Lab | Module | App |
+|---|---|---|---|
+| 11 | Create a real restrictive IAM user + least-privilege policy; try an allowed S3 action and a denied one, watch the real Allow/Deny | M29 — Cloud IAM | AWS Free Tier account (IAM itself is always free; stay inside S3's free tier for the test resource) |
+
+Upgraded 2026-10-01 from "read and annotate a sample policy" — that wasn't a live demo, just reading JSON.
+
+## Capstone
+
+Module 33 is already the lab — and should explicitly draw on real findings from Threads A, C and D (a real PIM activation, a real GitHub token gap, a real IAM Deny) as evidence, not hypotheticals.
+
+## Modules with no lab
+
+M1–4, 6–7, 9, 13, 15–16, 18–19, 22, 24–26, 28, 30–32 — vocabulary, classification or reading/mapping. The inline "Try it" box covers them where one exists.
+
+## How a lab actually gets written
+
+Said in a `/identity` session once you reach it — built then, grounded in what was taught, referencing the real artifacts earlier labs in its thread produced. Each lab states its one concrete deliverable up front and ends with a cross-check against [`../identity.html`](../identity.html).
