@@ -1,6 +1,6 @@
 # Identity learning progress
 
-Current module: **2: The four questions (IAAA)**
+Current module: **4: Credentials: what actually proves identity**
 Starting level: very basic
 Goal: expert in identity security, traditional and in the age of AI
 Target pace: four evenings a week, 45–60 min each (roughly 16 weeks)
@@ -9,8 +9,8 @@ Target pace: four evenings a week, 45–60 min each (roughly 16 weeks)
 
 ### Phase 1: Foundations
 - [x] M1 What is an identity?
-- [ ] M2 The four questions (IAAA)
-- [ ] M3 Who talks to whom: user-to-machine, user-to-user, machine-to-machine
+- [x] M2 The four questions (IAAA)
+- [x] M3 Who talks to whom: user-to-machine, user-to-user, machine-to-machine
 - [ ] M4 Credentials: what actually proves identity
 - [ ] M5 Authentication and MFA in depth
 - [ ] M6 Authorization in depth
@@ -55,6 +55,7 @@ Target pace: four evenings a week, 45–60 min each (roughly 16 weeks)
 ## Session log
 
 <!-- Newest first. Format: YYYY-MM-DD · Module · What clicked · What's fuzzy · Next -->
+- 2026-10-02 · M2, M3 self-read on mobile · He read Modules 2 (the four questions: IAAA) and 3 (who talks to whom) independently on his phone, outside a guided session -- not taught live. Checklist updated to reflect it. Flagged: unlike M1, these two have no live note / knowledge-base capture yet, since the usual explain-back + security-lens-reinforcement cycle didn't happen. Offered a quick recap; his call whether to take it or move straight to M4. · No KB entry yet for M2-M3 -- worth a short recap if he wants the security lens reinforced · Module 4: Credentials
 - 2026-10-01 · Labs plan, audited for real feasibility · He pushed back twice: first on a reflective-Q&A "lab," then on whether the 11-lab plan was genuinely connected and live-demoable, not just asserted. Audited every lab against "can this actually be clicked through live on a real free app, reproducibly." Found two real gaps, not cosmetic ones: (1) Lab 05 (detection) would have needed an extra Azure Log Analytics signup for real KQL -- decided on the light version instead (filter/export real sign-in logs in the Entra portal, no extra signup); (2) Labs 07-08 (Kerberos, attack path) were wrongly planned against the MVP track's bare Windows client, which has no domain controller and couldn't produce a real Kerberos ticket -- the honest fix is GOAD (a real small AD forest), which is parked for now rather than faked with a lighter substitute. Also named the real SAML app (Azure AD SAML Toolkit) and upgraded the AWS lab from reading a policy to actually testing a real Allow/Deny. Thread A (Entra tenant + the course's own "Priya" persona, Labs 01-06) is the one fully ready to build when reached. · -- · Continue module sequence at Module 2
 - 2026-10-01 · Labs infrastructure, corrected · Created `Labs/` as a standalone hands-on lab series, used in the evening Revision slot. First pass built a reflective Q&A "lab" for Module 1 — he pointed out it wasn't a real lab (no technical artifact) and that not every module needs one. Redone: surveyed all 33 modules for where a genuine technical exercise exists (a real token, command, tool or config to touch) — only 10 modules qualify (M5, 8, 10–11, 12, 17, 20, 21, 23, 27, 29) plus the capstone. `Labs/README.md` now holds that honest, sparser index with the reasoning per module. No lab built yet — the first real one (M5, set up a passkey) waits until that module is taught. · -- · Continue module sequence at Module 2
 - 2026-10-01 · OEM products (separate track) · Read two Cisco Live decks (BRKSEC-2879 "Duo Identity Security", BRKSEC-2162 "Identity Intelligence Demystified") and added a new "OEM products" section to identity.html: Duo's true-passwordless/device-trust/AD-Defense-for-legacy-Kerberos-NTLM product, and Cisco Identity Intelligence (CII, formerly Oort) as a real ITDR/ISPM implementation -- multi-IdP correlation, "checks" as detection rules, streaming vs API sync detection-speed gap, a worked Evilginx/AiTM session-hijack example, User Trust Level. Real sourced numbers added (44% of identity attacks target AD, 60% of breaches involve identity, up to 92:1 projected machine-to-human identity ratio). This is a separate track from the 33-module course sequence, not counted against module progress. · -- · Continue module sequence at Module 2; next OEM session whenever more vendor material is added
