@@ -411,6 +411,7 @@ At a concert, security checks your ID once at the gate (authentication) and give
 <tr><td><strong>Machine → machine</strong></td><td>One microservice calling another, a nightly job reading a database, CI/CD deploying to cloud, a SaaS-to-SaaS integration</td><td>API key, client secret, certificate (mTLS), Kerberos service ticket, cloud workload token</td><td>OAuth client credentials, mTLS, Kerberos, SSH keys, cloud IAM</td><td>Leaked or long-lived secrets, too much access, no owner</td></tr>
 <tr><td><strong>Machine on behalf of a user</strong> (delegation)</td><td>"Allow this app to read your calendar", a web app calling its backend as you, an AI agent acting for you</td><td>A token delegated by the user, often combined with the app's own credential</td><td>OAuth authorization code, OIDC, token exchange, Kerberos constrained delegation</td><td>Excessive scopes, consent phishing, the backend losing track of which user it's acting for</td></tr>
 </table></div>
+<p class="small">The "typical protocols" column names real protocols on purpose, before you've learned any of them — that's deliberate, not an oversight: the point right now is only that <em>each relationship pattern uses a different protocol family</em>, not what any protocol actually does. Kerberos and NTLM get their own module (Module 8), SAML gets one (Module 11), OAuth and OIDC get one (Module 12). Nothing in this table needs to make full sense yet.</p>
 
 <h3>User-to-user is really user → machine → user</h3>
 <p>Humans almost never authenticate each other directly; a system in the middle vouches. When an email arrives "from the CFO", the mail system checked that <em>someone</em> signed into that mailbox, and email standards (SPF, DKIM, DMARC) checked that it came from the company's domain. Nothing proved the human CFO wrote it. In early 2024, an employee of the engineering firm Arup in Hong Kong transferred about US$25 million after a video call in which the "CFO" and "colleagues" were deepfakes. The defense is old-fashioned: verify through a second, independent channel you already trust (call back a known number), and use digital signatures for documents that matter.</p>
@@ -419,7 +420,7 @@ At a concert, security checks your ID once at the gate (authentication) and give
 <p>When an assistant sends email for a boss, there are two ways to set it up. With <strong>delegation</strong>, the email says "Sam on behalf of Priya" and the logs show both people. With <strong>impersonation</strong>, Sam logs in <em>as</em> Priya (often with her password) and the logs show only Priya. Delegation keeps accountability; impersonation destroys it. The same choice appears for machines: a good design shows "expense app acting for Priya", not "Priya" or just "expense app".</p>
 
 <h3>Authentication should go both ways</h3>
-<p>We usually talk about the user proving themselves to the machine. But the machine should prove itself too: that's <strong>mutual authentication</strong>. Your browser checks a website's TLS certificate; Kerberos can prove the server's identity back to the client; in machine-to-machine traffic, <strong>mTLS</strong> (mutual TLS) makes both sides show certificates. Phishing works precisely because humans can't reliably authenticate the website. Passkeys fix that by letting the device do the checking.</p>
+<p>We usually talk about the user proving themselves to the machine. But the machine should prove itself too: that's <strong>mutual authentication</strong>. Your browser checks a website's TLS certificate (a signed proof of who a server is — full mechanism in Module 4); Kerberos can do the same for a server proving itself back to a client (Module 8); in machine-to-machine traffic, <strong>mTLS</strong> ("mutual TLS": both sides show a certificate, not just one) does it for two services talking to each other. Phishing works precisely because humans can't reliably authenticate the website. Passkeys (Module 5) fix that by letting the device do the checking instead of the human.</p>
 
 <div class="big"><b>The human-present test</b>
 If a human is present, you can use MFA, passkeys and consent screens. If not, none of those work, and security depends on how the credential is stored, how short-lived it is, and whether the platform can vouch for the workload. This one fact is why machine identity (Phase 4) is a separate discipline.</div>
@@ -460,13 +461,13 @@ A visitor showing ID at reception is user→machine. Two colleagues on a speaker
 <p>With a password, the server must keep <em>something</em> to compare against, so it keeps a hash. Steal the hash database and you can try to crack it. With public-key cryptography, the private key <strong>signs</strong> and the public key <strong>verifies</strong>. The server keeps only public keys, so stealing them gives an attacker nothing. That's why the whole industry is moving from secrets to key pairs: passkeys for humans, certificates and platform-issued keys for machines.</p>
 
 <h3>Primary vs derived credentials</h3>
-<p>You rarely present your <em>primary</em> credential (password, passkey) more than once. It gets exchanged for <em>derived</em> credentials that do the day-to-day work:</p>
+<p>You rarely present your <em>primary</em> credential (password, passkey — a device-held key pair, covered fully in Module 5) more than once. It gets exchanged for <em>derived</em> credentials: things the primary credential earns you, each one good enough to act as you without asking for the primary credential again. Three worked examples — don't worry about naming every link yet, each one gets its own full module later:</p>
 <ul>
-<li><strong>Web:</strong> passkey → identity provider session → SAML assertion or ID token → the app's session cookie.</li>
-<li><strong>Windows:</strong> password or Windows Hello → Kerberos ticket-granting ticket → service tickets for each file share and app.</li>
-<li><strong>APIs:</strong> client secret or certificate → OAuth access token (minutes) and sometimes a refresh token (days).</li>
+<li><strong>Web:</strong> passkey → a session with the service that checks logins for every app (an "identity provider," taught properly in Module 10) → a signed proof of that login handed to the app you're actually using (either a <strong>SAML assertion</strong>, Module 11, or an <strong>ID token</strong>, Module 12 — two different standards for the same idea) → the app's own session cookie.</li>
+<li><strong>Windows:</strong> password or Windows Hello → a <strong>Kerberos ticket-granting ticket</strong> (proof you logged into the network at all) → <strong>service tickets</strong> (a separate derived pass for each specific file share or app you touch) — both explained in Module 8.</li>
+<li><strong>APIs:</strong> client secret or certificate → an <strong>OAuth access token</strong> (minutes) and sometimes a <strong>refresh token</strong> (days) that can mint fresh access tokens without asking again — both explained in Module 12.</li>
 </ul>
-<p>Stealing any link in the chain lets an attacker enter at that point, <em>skipping every check that happened before it</em>, including MFA. That's why token theft is such a big deal.</p>
+<p>The pattern across all three: one primary credential, presented once, cashed in for a chain of derived passes. Stealing <em>any</em> link in that chain lets an attacker enter at that point, <em>skipping every check that happened before it</em>, including MFA — because a derived credential doesn't know or care how it was earned, only that it's valid. That's why token theft is such a big deal.</p>
 
 <h3>The credential catalogue</h3>
 <div class="tablewrap"><table>
@@ -475,15 +476,15 @@ A visitor showing ID at reception is user→machine. Two colleagues on a speaker
 <tr><td>PIN (Windows Hello, smart card)</td><td>Humans</td><td>Unlocks a key stored on the device</td><td>Long</td><td>Useless without the device</td></tr>
 <tr><td>One-time code (SMS, authenticator app)</td><td>Humans</td><td>Code derived from a shared secret</td><td>30 s to minutes</td><td>Only works if relayed in real time</td></tr>
 <tr><td>Push approval</td><td>Humans</td><td>Device key plus a human tap</td><td>Seconds</td><td>Vulnerable to fatigue spam</td></tr>
-<tr><td>Passkey / FIDO2 security key</td><td>Humans</td><td>Private key tied to one website</td><td>Long</td><td>Can't be phished; attacker needs the device or synced account</td></tr>
-<tr><td>X.509 certificate + private key</td><td>Both (smart cards, devices, mTLS, websites)</td><td>Key pair vouched for by a CA</td><td>Days to years</td><td>Impersonation until revoked or expired</td></tr>
+<tr><td>Passkey / FIDO2 security key <span class="small">(Module 5)</span></td><td>Humans</td><td>Private key tied to one website</td><td>Long</td><td>Can't be phished; attacker needs the device or synced account</td></tr>
+<tr><td>X.509 certificate + private key <span class="small">(explained below)</span></td><td>Both (smart cards, devices, mTLS, websites)</td><td>Key pair vouched for by a CA</td><td>Days to years</td><td>Impersonation until revoked or expired</td></tr>
 <tr><td>SSH key</td><td>Both</td><td>Key pair</td><td>Often never expires</td><td>Access to every server that trusts it</td></tr>
-<tr><td>NT hash</td><td>Windows</td><td>Secret derived from the password</td><td>Until password changes</td><td>Pass-the-hash (Module 8)</td></tr>
-<tr><td>Kerberos ticket</td><td>Both</td><td>Issued, encrypted</td><td>About 10 hours by default</td><td>Pass-the-ticket</td></tr>
+<tr><td>NT hash <span class="small">(Module 8)</span></td><td>Windows</td><td>Secret derived from the password</td><td>Until password changes</td><td>Pass-the-hash (Module 8)</td></tr>
+<tr><td>Kerberos ticket <span class="small">(Module 8)</span></td><td>Both</td><td>Issued, encrypted</td><td>About 10 hours by default</td><td>Pass-the-ticket (Module 8)</td></tr>
 <tr><td>Session cookie</td><td>Humans</td><td>Issued bearer</td><td>Hours to weeks</td><td>Session hijack; bypasses MFA</td></tr>
-<tr><td>SAML assertion / ID token (JWT)</td><td>Humans, via apps</td><td>Signed statement</td><td>Minutes</td><td>Short replay window</td></tr>
-<tr><td>OAuth access token</td><td>Both</td><td>Bearer (or bound to a key)</td><td>Minutes to hours</td><td>API access within its scopes</td></tr>
-<tr><td>OAuth refresh token</td><td>Both</td><td>Bearer</td><td>Days to months</td><td>Mints fresh access tokens</td></tr>
+<tr><td>SAML assertion / ID token (JWT) <span class="small">(Modules 11–12)</span></td><td>Humans, via apps</td><td>Signed statement</td><td>Minutes</td><td>Short replay window</td></tr>
+<tr><td>OAuth access token <span class="small">(Module 12)</span></td><td>Both</td><td>Bearer (or bound to a key)</td><td>Minutes to hours</td><td>API access within its scopes</td></tr>
+<tr><td>OAuth refresh token <span class="small">(Module 12)</span></td><td>Both</td><td>Bearer</td><td>Days to months</td><td>Mints fresh access tokens</td></tr>
 <tr><td>API key / personal access token</td><td>Machines and scripts</td><td>Static bearer secret</td><td>Often never expires</td><td>Everything the key can do</td></tr>
 <tr><td>Client secret</td><td>Machines (OAuth apps)</td><td>Shared secret</td><td>Often 1–2 years</td><td>Attacker can act as the app</td></tr>
 <tr><td>Cloud access keys (e.g. AWS)</td><td>Machines</td><td>Shared secret</td><td>Until rotated</td><td>Cloud API access</td></tr>
@@ -573,7 +574,7 @@ A shared secret is the password to a speakeasy: the doorman knows it too, so a c
 </ul>
 
 <h3>Step-up authentication and MFA signals</h3>
-<p><strong>Step-up</strong> means asking for stronger proof at a sensitive moment, such as approving a payment or opening an admin console, even mid-session. With single sign-on, MFA happens once at the identity provider, which then tells the app <em>how</em> you authenticated: SAML carries it in the <code>AuthnContext</code> and OpenID Connect in the <code>amr</code> and <code>acr</code> claims. An app can refuse a session that wasn't created with MFA.</p>
+<p><strong>Step-up</strong> means asking for stronger proof at a sensitive moment, such as approving a payment or opening an admin console, even mid-session. With single sign-on (one login covering many apps, the full mechanism is Module 10), MFA happens once at the <strong>identity provider</strong> — the one service that checks logins on everyone else's behalf, taught properly in Module 10 — which then tells the app <em>how</em> you authenticated: SAML carries it in the <code>AuthnContext</code> (Module 11) and OpenID Connect in the <code>amr</code> and <code>acr</code> claims (Module 12). An app can refuse a session that wasn't created with MFA.</p>
 
 <h3>Adaptive (risk-based) authentication</h3>
 <p>Modern identity providers don't treat every login the same. They look at signals (new device? impossible travel? known-bad IP? managed laptop?) and decide whether to allow, step up to stronger MFA, or block. Microsoft calls this <em>Conditional Access</em>; Okta calls them <em>authentication policies</em>. Same idea.</p>
@@ -631,7 +632,7 @@ A password is telling the bouncer a secret word; anyone who overheard it can rep
 </ul>
 
 <h3>Coarse vs fine-grained</h3>
-<p><strong>Coarse-grained</strong> authorization answers "can Priya use the finance app at all?", usually decided at login by the identity provider. <strong>Fine-grained</strong> authorization answers "can Priya approve <em>this</em> invoice over $10k?", usually decided inside the application. Identity teams typically own the first; developers own the second. Many gaps live in between.</p>
+<p><strong>Coarse-grained</strong> authorization answers "can Priya use the finance app at all?", usually decided at login by the identity provider (the login-checking service from Module 5, covered fully in Module 10). <strong>Fine-grained</strong> authorization answers "can Priya approve <em>this</em> invoice over $10k?", usually decided inside the application. Identity teams typically own the first; developers own the second. Many gaps live in between.</p>
 
 <div class="warnbox"><b>Privilege creep</b>
 People change jobs internally and keep their old access, so over years they accumulate far more than they need. This silent accumulation is one of the most common findings in any identity audit, and it's the reason access reviews exist (Module 13).</div>
@@ -683,7 +684,7 @@ People change jobs internally and keep their old access, so over years they accu
 In our building, HR tells reception "Priya starts Monday on floor 3". Reception (the directory) records it and prints a badge. If reception's list disagrees with HR, you get ghosts: badges for people who left, or new hires stuck in the lobby.</div>
 
 <div class="lens"><b>Security lens</b>
-<p><strong>Attacker's view:</strong> Active Directory is the crown jewel. Any domain user can read most of it, so tools like BloodHound map a route to Domain Admin from a single phished account.</p>
+<p><strong>Attacker's view:</strong> Active Directory is the crown jewel. Any domain user can read most of it, so tools like BloodHound (an attack-path mapper, covered in Module 17) map a route to Domain Admin from a single phished account.</p>
 <p><strong>Detect:</strong> Watch for changes to privileged groups (events 4728, 4732, 4756), DCSync-style replication (4662), new domain trusts, and changes on the Entra Connect server.</p>
 <p><strong>Defend:</strong> Tier your administration, clean up stale objects and dangerous permissions, and treat the sync server as Tier 0 (Module 17).</p></div>
 
@@ -791,8 +792,8 @@ NTLM is a guard who asks you a riddle and phones head office to check your answe
 
 <div class="lens"><b>Security lens</b>
 <p><strong>Attacker's view:</strong> NTLM relay and pass-the-hash; Kerberoasting; Golden and Silver Tickets; delegation abuse. These are the everyday moves of ransomware operators.</p>
-<p><strong>Detect:</strong> Event 4769 with RC4 encryption across many SPNs (Kerberoasting); 4776 NTLM validations where you expect Kerberos; TGS requests with no preceding TGT; unusual 4624 logon types. Microsoft Defender for Identity and other ITDR tools detect many of these out of the box.</p>
-<p><strong>Defend:</strong> gMSAs for service accounts, AES-only Kerberos, NTLM switched off step by step, SMB and LDAP signing, Credential Guard, and Tier 0 isolation.</p></div>
+<p><strong>Detect:</strong> Event 4769 with RC4 encryption across many SPNs (Kerberoasting); 4776 NTLM validations where you expect Kerberos; TGS requests with no preceding TGT; unusual 4624 logon types. Microsoft Defender for Identity and other <strong>ITDR</strong> tools (identity threat detection and response — purpose-built products for exactly this, covered in Module 18) detect many of these out of the box.</p>
+<p><strong>Defend:</strong> gMSAs for service accounts, AES-only Kerberos, NTLM switched off step by step, SMB and LDAP signing, Credential Guard, and <strong>Tier 0</strong> isolation — keeping the systems that control every other identity (domain controllers, the sync server) walled off from everyday admin accounts, explained fully in Module 17.</p></div>
 
 <div class="quiz"><h3>Check yourself</h3>
 <ol>
@@ -1169,7 +1170,7 @@ An attacker got a contractor's password, then spammed MFA push requests until th
 <div class="lens"><b>Security lens</b>
 <p><strong>Attacker's view:</strong> The vault itself is a prime target (the Uber case). Other routes: hijacking admin sessions, and "shadow admins" (accounts with admin-equivalent rights outside the admin groups).</p>
 <p><strong>Detect:</strong> Privileged access that bypasses PAM (direct RDP with an admin account), vault configuration changes, and use of break-glass accounts.</p>
-<p><strong>Defend:</strong> Put the PAM platform in Tier 0, require phishing-resistant MFA on the vault, hunt for shadow admins with attack-path tools, and aim for zero standing privilege.</p></div>
+<p><strong>Defend:</strong> Put the PAM platform in Tier 0 (the walled-off control-plane tier covered in Module 17), require phishing-resistant MFA on the vault, hunt for shadow admins with attack-path tools, and aim for zero standing privilege.</p></div>
 
 <div class="quiz"><h3>Check yourself</h3>
 <ol>
