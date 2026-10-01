@@ -3,8 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Identity From First Principles</title>
-<meta name="description" content="A self-study guide to identity management, identity security and non-human identities, from basics to advanced.">
+<title>Identity Security</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 :root{
@@ -13,14 +12,24 @@
   --warn:#B7791F; --warn-soft:#FBF1DF; --bad:#D1394E; --bad-soft:#FBE6E8; --code:#F4F6FA;
   --govern:#5B47C9;
   --display:'Bricolage Grotesque','Avenir Next',system-ui,sans-serif; --body:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif; --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
-  --radius:14px; --maxw:900px; color-scheme:light;
+  --radius:14px; --maxw:960px; color-scheme:light;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 var(--body);-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 var(--body);-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}
 a{color:var(--accent)}
 h1,h2,h3,h4{font-family:var(--display);text-wrap:balance}
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+
+/* -- tab bar, shared -- */
+.tabbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;height:48px;display:flex;background:#FFFFFF;border-bottom:1px solid var(--border);box-shadow:0 1px 2px rgba(20,30,50,.04)}
+.tabbtn{flex:1;border:0;background:none;font:600 .86rem var(--display);color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+.tabbtn.active{color:var(--govern);border-bottom-color:var(--govern)}
+.tabpanel[hidden]{display:none}
+
+/* -- course tab styles -- */
+
+#tab-course{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 var(--body);-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}
+header.top{position:sticky;top:calc(env(safe-area-inset-top,0px) + 48px);z-index:10;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
 .topbar{max-width:var(--maxw);margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px}
 .topbar strong{font:800 1rem var(--display);color:var(--govern);white-space:nowrap}
 .bar{flex:1;height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden}
@@ -95,15 +104,83 @@ dl.gloss dt{font-family:var(--display);font-weight:700;margin-top:10px}
 dl.gloss dd{margin:2px 0 0 0;color:var(--muted)}
 .small{font-size:14px;color:var(--muted)}
 footer{max-width:var(--maxw);margin:0 auto;padding:20px 16px 60px;color:var(--muted);font-size:13px;border-top:1px solid var(--border);margin-top:30px}
+
+
+/* -- knowledge base tab styles -- */
+
+#tab-kb{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 var(--body);-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}
+header.top{position:sticky;top:calc(env(safe-area-inset-top,0px) + 48px);z-index:10;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.kb-topbar{max-width:var(--maxw);margin:0 auto;padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.kb-topbar strong{font:800 1rem var(--display);color:var(--govern);white-space:nowrap}
+#q{flex:1;min-width:180px;font:14px var(--body);padding:7px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text)}
+.btn{font:500 .78rem var(--mono);border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:8px;padding:5px 10px;cursor:pointer}
+.chips{max-width:var(--maxw);margin:0 auto;padding:0 16px 10px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.chip{flex:none;font:500 .74rem var(--mono);border:1px solid var(--border);background:var(--surface);color:var(--muted);border-radius:99px;padding:4px 12px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--govern);border-color:var(--govern);color:#fff}
+main{max-width:var(--maxw);margin:0 auto;padding:0 16px 80px}
+h1{font-size:clamp(26px,6vw,36px);line-height:1.15;font-weight:800;letter-spacing:-.02em;margin:28px 0 6px}
+.kb-lede{color:var(--muted);margin:0 0 8px;max-width:70ch}
+h2{font-size:clamp(20px,4.5vw,24px);font-weight:700;margin:40px 0 4px;padding-top:10px;border-top:2px solid var(--text);scroll-margin-top:110px}
+h2 small{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin-left:6px}
+.secnote{color:var(--muted);font-size:14px;margin:0 0 12px}
+.kb-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+.kb-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:0 1px 2px rgba(20,30,50,.04)}
+.kb-card h3{font-size:15px;margin:0 0 6px}
+.kb-card p{margin:0 0 6px}
+.kb-card ul,.kb-card ol{margin:4px 0 6px;padding-left:18px}
+.kb-card li{margin:2px 0}
+.src{font-size:12px;color:var(--muted)}
+.proto{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:12px 0;box-shadow:0 1px 2px rgba(20,30,50,.04)}
+.proto h3{margin:0 0 4px;font-size:17px}
+.proto .purpose{color:var(--muted);margin:0 0 8px}
+.proto dl{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;margin:0}
+.proto dt{font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+.proto dd{margin:0}
+@media(max-width:520px){.proto dl{grid-template-columns:1fr}.proto dt{margin-top:6px}}
+.kb-tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:640px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:var(--surface-2);font:600 .72rem var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--accent);position:sticky;top:0}
+tr:last-child td{border-bottom:none}
+code{font-family:var(--mono);font-size:.88em;background:var(--code);padding:1px 5px;border-radius:5px}
+pre{background:var(--code);padding:10px 12px;border-radius:8px;overflow-x:auto;font-size:12.5px;line-height:1.5;margin:6px 0;font-family:var(--mono)}
+pre code{background:none;padding:0}
+.entry{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--good);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:10px 0;box-shadow:0 1px 2px rgba(20,30,50,.04)}
+.entry .meta{font-family:var(--mono);font-size:11px;color:var(--good);font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+.entry h3{margin:2px 0 6px;font-size:16px}
+.entry ul{margin:4px 0;padding-left:18px}
+.tag{display:inline-block;font:600 .68rem var(--mono);letter-spacing:.02em;border-radius:99px;padding:2px 9px;margin-right:4px;background:var(--accent-soft);color:var(--accent)}
+.tag.red{background:var(--bad-soft);color:var(--bad)}
+.tag.amber{background:var(--warn-soft);color:var(--warn)}
+.tag.green{background:var(--good-soft);color:var(--good)}
+nav.jump{display:flex;flex-wrap:wrap;gap:6px 14px;font:500 .8rem var(--mono);color:var(--muted);margin:12px 0 0}
+nav.jump a{color:var(--muted)}
+nav.jump a:hover{color:var(--accent)}
+.hidden{display:none!important}
+#empty{display:none;color:var(--muted);margin:24px 0}
+dl.gloss{columns:2 300px;column-gap:28px}
+dl.gloss div{break-inside:avoid;margin-bottom:8px}
+dl.gloss dt{font-family:var(--display);font-weight:700}
+dl.gloss dd{margin:0;color:var(--muted)}
+footer{max-width:var(--maxw);margin:0 auto;padding:20px 16px 60px;color:var(--muted);font-size:13px;border-top:1px solid var(--border);margin-top:30px}
+
 </style>
 </head>
 <body>
+
+<div class="tabbar">
+  <button class="tabbtn" id="btn-course" type="button">Course</button>
+  <button class="tabbtn" id="btn-kb" type="button">Knowledge Base</button>
+</div>
+
+<div class="tabpanel" id="tab-course">
+
 <header class="top">
   <div class="topbar">
     <strong>Identity 101→401</strong>
     <div class="bar" aria-hidden="true"><span id="barfill"></span></div>
     <span id="pct">0%</span>
-    <a class="btn" href="https://claude.ai/artifact/1qiEcgjDBvi95HRvZKhMrd" style="text-decoration:none">KB</a>
+    <a class="btn" href="#tab-kb" style="text-decoration:none">KB</a>
   </div>
 </header>
 
@@ -121,7 +198,7 @@ Every security decision in a computer system comes down to three questions: <em>
 <tr><td>1</td><td><strong>Read</strong> the next module (25–30 min). Don't skip the analogy boxes; they carry the intuition.</td></tr>
 <tr><td>2</td><td><strong>Explain it back</strong> to Claude: <em>"I'll explain Module N; tell me what I got wrong,"</em> then answer "Check yourself" before revealing the answers.</td></tr>
 <tr><td>3</td><td><strong>Think like an attacker:</strong> study the red <em>Security lens</em> box and ask Claude to quiz you on it. Then read the next module.</td></tr>
-<tr><td>4</td><td><strong>Lab</strong> (or a longer weekend lab), then <strong>capture</strong> what you learned: Claude adds your takeaways to the <a href="https://claude.ai/artifact/1qiEcgjDBvi95HRvZKhMrd">knowledge base</a> and a line to <code>progress.md</code>.</td></tr>
+<tr><td>4</td><td><strong>Lab</strong> (or a longer weekend lab), then <strong>capture</strong> what you learned: Claude adds your takeaways to the <a href="#tab-kb">knowledge base</a> and a line to <code>progress.md</code>.</td></tr>
 </table></div>
 <p>The foundation, IAM and cloud modules each have a red <strong>Security lens</strong> box with three angles: <em>the attacker's view</em>, <em>how to detect it</em> and <em>how to defend it</em>. The security, NHI and AI modules are about attack and defense throughout. An identity security expert asks all three questions about everything.</p>
 
@@ -1935,5 +2012,551 @@ Part of <code>PA/office/identity</code>. Content reflects the landscape as of 20
   render();
 })();
 </script>
+
+</div>
+
+<div class="tabpanel" id="tab-kb" hidden>
+
+<header class="top">
+  <div class="kb-topbar">
+    <strong>Identity KB</strong>
+    <input id="q" type="search" placeholder="Search: kerberos, token theft, 4769, MCP…" aria-label="Search the knowledge base">
+  </div>
+  <div class="chips" role="toolbar" aria-label="Filter by topic">
+    <button class="chip" data-f="all" aria-pressed="true">All</button>
+    <button class="chip" data-f="learn" aria-pressed="false">My learnings</button>
+    <button class="chip" data-f="concept" aria-pressed="false">Concepts</button>
+    <button class="chip" data-f="protocol" aria-pressed="false">Protocols</button>
+    <button class="chip" data-f="attack" aria-pressed="false">Attacks</button>
+    <button class="chip" data-f="detect" aria-pressed="false">Detection</button>
+    <button class="chip" data-f="defend" aria-pressed="false">Defense</button>
+    <button class="chip" data-f="incident" aria-pressed="false">Incidents</button>
+    <button class="chip" data-f="nhi" aria-pressed="false">NHI</button>
+    <button class="chip" data-f="ai" aria-pressed="false">AI</button>
+    <button class="chip" data-f="standard" aria-pressed="false">Standards</button>
+    <button class="chip" data-f="oem" aria-pressed="false">OEM products</button>
+  </div>
+</header>
+
+<main>
+<h1>Identity knowledge base</h1>
+<p class="kb-lede">Everything learned on the way to identity security expertise, condensed for quick reference. The <a href="#tab-course">course</a> is where ideas are taught; this page is where they're kept. Claude adds to <strong>My learnings</strong> after every study session.</p>
+<p class="src">Last updated: 2026-10-01 · Course progress: Module 2 of 33</p>
+<nav class="jump" aria-label="Sections">
+  <a href="#learnings">My learnings</a><a href="#concepts">Concepts</a><a href="#protocols">Protocols</a><a href="#matrix">Attack → detect → defend</a><a href="#detections">Detection library</a><a href="#playbooks">IR playbooks</a><a href="#incidents">Incident files</a><a href="#nhi-ai">NHI &amp; AI</a><a href="#oem">OEM products</a><a href="#numbers">Numbers</a><a href="#standards">Standards</a><a href="#glossary">Glossary</a><a href="#questions">Open questions</a>
+</nav>
+<p id="empty">Nothing matches. Try a broader word, or ask Claude and add the answer here.</p>
+
+<!-- ======================= MY LEARNINGS ======================= -->
+<section id="learnings" data-sec>
+<h2>My learnings <small>newest first · written in my own words</small></h2>
+<p class="secnote">One entry per study session: what clicked, key takeaways, what's still fuzzy. Claude adds these; you can edit them.</p>
+<!-- NEW LEARNING ENTRIES GO DIRECTLY BELOW THIS LINE (newest first) -->
+<article class="entry kb" data-f="learn">
+  <div class="meta">2026-09-30 · Module 1</div>
+  <h3>What is an identity? (first real session, not just setup)</h3>
+  <ul>
+    <li>A digital identity is four pieces: an <strong>entity</strong> (the real thing) plus <strong>identifiers</strong> (point to it), <strong>attributes</strong> (facts about it) and <strong>credentials</strong> (prove it). Nothing more exotic than that.</li>
+    <li>Two kinds of entity: <strong>human</strong> (interactive, can do MFA, eventually leaves) and <strong>non-human</strong> (automatic, can't do MFA, often outlives its creator). Machine identities now outnumber human ones by a wide margin, and get watched far less.</li>
+    <li>Identity became "the new perimeter" because the network edge stopped meaning anything once laptops, SaaS and cloud servers left the building — the one constant left in any access request is <em>an identity asking for something</em>.</li>
+    <li>The flip side: <strong>attackers don't break in any more, they log in.</strong></li>
+    <li>The office-building analogy (entity=you, identifier=badge name, attributes=floor/department, credential=badge chip, reception=identity system) recurs through the whole course.</li>
+  </ul>
+  <p class="src">Next: <a href="#four-questions">Module 2: The four questions (IAAA)</a></p>
+</article>
+<article class="entry kb" data-f="learn">
+  <div class="meta">2026-09-28 · Setup</div>
+  <h3>Starting point and goal</h3>
+  <ul>
+    <li><strong>Goal:</strong> become an expert in identity security, both traditional (AD, SSO, IGA, PAM) and in the age of AI (deepfakes, AI agents, shadow AI).</li>
+    <li><strong>Starting level:</strong> very basic.</li>
+    <li><strong>Method:</strong> four evening sessions a week: read, explain back, security lens, lab. About 16 weeks, 33 modules.</li>
+    <li><strong>Core idea to carry through:</strong> every access decision answers <em>who is this, how do we know, and what may they do?</em> Attackers don't break in; they log in.</li>
+  </ul>
+  <p class="src">Next: <a href="#what-is-identity">Module 1: What is an identity?</a></p>
+</article>
+</section>
+
+<!-- ======================= CONCEPTS ======================= -->
+<section id="concepts" data-sec>
+<h2>Core concepts <small>the mental models</small></h2>
+<div class="kb-grid">
+<div class="kb-card kb" data-f="concept"><h3>Anatomy of an identity</h3><p><strong>Entity</strong> (the real thing) → <strong>identifiers</strong> (email, employee ID) + <strong>attributes</strong> (department, role) + <strong>credentials</strong> (password, passkey, certificate).</p><p>Two kinds of entity: <strong>humans</strong> and <strong>non-humans</strong> (service accounts, keys, workloads, bots, agents). NHIs now far outnumber humans.</p><p class="src"><a href="#what-is-identity">Module 1</a></p></div>
+<div class="kb-card kb" data-f="concept"><h3>IAAA: the four questions</h3><ol><li><strong>Identification:</strong> who do you claim to be?</li><li><strong>Authentication (AuthN):</strong> prove it.</li><li><strong>Authorization (AuthZ):</strong> what may you do?</li><li><strong>Audit:</strong> what did you do?</li></ol><p>AuthN ≠ AuthZ. Many breaches are authorization failures (too much access), not authentication failures.</p><p class="src"><a href="#four-questions">Module 2</a></p></div>
+<div class="kb-card kb" data-f="concept"><h3>Tokens are wristbands</h3><p>After you authenticate, you get a session cookie or token. <strong>Whoever holds it is treated as you</strong>, skipping the password and MFA. Token theft is the modern bypass.</p><p class="src"><a href="#four-questions">Module 2</a></p></div>
+<div class="kb-card kb" data-f="concept"><h3>Who talks to whom</h3><ul><li><strong>User → machine:</strong> login; phishing is the threat.</li><li><strong>User → user:</strong> mediated by systems; impersonation, BEC and deepfakes are the threats.</li><li><strong>Machine → machine:</strong> API keys, certificates, tokens; leaked long-lived secrets are the threat.</li><li><strong>Machine on behalf of a user:</strong> delegation; over-scoped consent is the threat.</li></ul><p><strong>Human-present test:</strong> no human means no MFA, so rely on short lifetimes, vaults, workload identity and scoping.</p><p class="src"><a href="#who-talks-to-whom">Module 3</a></p></div>
+<div class="kb-card kb" data-f="concept"><h3>Delegation vs impersonation</h3><p><strong>Delegation:</strong> "Sam on behalf of Priya", with both identities logged, scoped and revocable. <strong>Impersonation:</strong> Sam acts <em>as</em> Priya and accountability is lost. Always prefer delegation, for people and for agents.</p><p class="src"><a href="#who-talks-to-whom">Module 3</a></p></div>
+<div class="kb-card kb" data-f="concept"><h3>Classifying credentials</h3><ul><li><strong>Shared secret</strong> (password, API key): both sides know it, so either can leak it.</li><li><strong>Key pair</strong> (passkey, certificate): the private key never leaves; the server stores only the public key.</li><li><strong>Bearer</strong> (cookie, API key): works for whoever holds it.</li><li><strong>Proof-of-possession</strong> (passkey, DPoP, mTLS): signs a fresh challenge, so it can't be replayed.</li></ul><p><strong>Primary → derived:</strong> passkey → IdP session → assertion or token → app cookie. Stealing a derived credential skips MFA.</p><p class="src"><a href="#credentials">Module 4</a></p></div>
+<div class="kb-card kb" data-f="concept defend"><h3>MFA strength ladder</h3><ol><li>SMS / voice: SIM swap, phishable</li><li>TOTP app: phishable (relayed)</li><li>Push: MFA fatigue (number matching helps)</li><li><strong>FIDO2 / passkeys / certificates: phishing-resistant</strong></li></ol><p>Passkeys are phishing-resistant because the key is bound to the website's origin; a look-alike domain gets nothing.</p><p class="src"><a href="#authn-mfa">Module 5</a></p></div>
+<div class="kb-card kb" data-f="concept attack"><h3>Where MFA can't reach</h3><ul><li>Legacy protocols (IMAP, POP, basic SMTP, NTLM)</li><li>After login (stolen tokens)</li><li>Machine identities</li><li>Enrolment and recovery (help desk, attacker-registered methods)</li><li>Inside the Windows network after desktop logon</li></ul><p class="src"><a href="#authn-mfa">Module 5</a></p></div>
+<div class="kb-card kb" data-f="concept"><h3>Authorization models</h3><ul><li><strong>ACL:</strong> list on each resource</li><li><strong>RBAC:</strong> roles (watch for role explosion)</li><li><strong>ABAC:</strong> attributes and context</li><li><strong>ReBAC:</strong> relationships (Google Zanzibar)</li><li><strong>PBAC:</strong> policy as code (AWS IAM, OPA, Cedar)</li></ul><p>Principles: least privilege, separation of duties, just-in-time, zero standing privilege.</p><p class="src"><a href="#authz">Module 6</a></p></div>
+<div class="kb-card kb" data-f="concept"><h3>Directories and sources of truth</h3><p><strong>AD</strong> (on-prem: LDAP, Kerberos, Group Policy) ≠ <strong>Entra ID</strong> (cloud: SAML, OIDC, OAuth). Most enterprises are hybrid, synced by Entra Connect. <strong>HR is the authoritative source</strong> for people; the directory consumes it.</p><p class="src"><a href="#directories">Module 7</a></p></div>
+<div class="kb-card kb" data-f="concept"><h3>Lifecycle: Joiner, Mover, Leaver</h3><p><strong>Mover</strong> is where privilege creep is born (new access is added, old access never removed). <strong>Leaver</strong> failures create orphaned accounts. <strong>SCIM</strong> automates provisioning and deprovisioning. NHIs rarely have a leaver event at all.</p><p class="src"><a href="#lifecycle">Module 9</a></p></div>
+<div class="kb-card kb" data-f="concept"><h3>SSO in one picture</h3><p>Apps (SP / RP) outsource authentication to one IdP and trust its signed statement. Sessions come in layers (device, IdP, app), so disabling a user in the IdP doesn't kill existing app sessions. SSO creates accounts just-in-time but can't remove them, which is why SCIM is needed. Prefer SP-initiated flows. <strong>The IdP is the master key.</strong></p><p class="src"><a href="#sso">Module 10</a></p></div>
+<div class="kb-card kb" data-f="concept"><h3>IAM vs IGA vs PAM vs CIAM</h3><ul><li><strong>IAM:</strong> make access work (AuthN, AuthZ, SSO)</li><li><strong>IGA:</strong> keep access right, and prove it (reviews, SoD, lifecycle)</li><li><strong>PAM:</strong> control the dangerous accounts (vault, rotation, session recording, JIT)</li><li><strong>CIAM:</strong> customers at scale (low friction, bots, account takeover, privacy)</li></ul><p class="src"><a href="#iga">Modules 13–15</a></p></div>
+<div class="kb-card kb" data-f="concept"><h3>PAM vs PIM</h3><p><strong>PAM</strong> asks how a privileged <em>account's credential</em> is protected every time it's used (vault, rotate, record the session). <strong>PIM</strong> asks who currently <em>holds</em> a privileged role and for how long — eligible vs. active, time-boxed activation with justification (Entra ID's own PIM feature is the clearest real example). PIM governs who can become privileged; PAM protects the credential once they do. Both aim at the same goal: zero standing privilege.</p><p class="src"><a href="#pam">Module 14</a></p></div>
+<div class="kb-card kb" data-f="concept attack"><h3>Attackers think in graphs</h3><p>Stages: recon → initial access → <strong>persistence</strong> → privilege escalation → lateral movement → objectives. Almost every step is an identity action. BloodHound maps the graph of relationships to Domain Admin.</p><p class="src"><a href="#attack-chain">Module 17</a></p></div>
+<div class="kb-card kb" data-f="concept defend"><h3>Tier 0</h3><p>Anything that controls identity for everything: DCs, AD FS and signing keys, Entra Connect, AD CS, PAM vault, IdP super-admins, device-management admins. Tier 0 accounts log in only to Tier 0 systems, from PAWs.</p><p class="src"><a href="#control-plane">Modules 17, 19</a></p></div>
+<div class="kb-card kb" data-f="concept defend"><h3>Zero Trust, ISPM, ITDR</h3><p><strong>Zero Trust</strong> (NIST 800-207): never trust, always verify, every request. <strong>ISPM:</strong> finds standing weaknesses (posture). <strong>ITDR:</strong> detects and responds to active identity attacks. <strong>Shared Signals / CAEP:</strong> real-time "revoke this session" between systems.</p><p class="src"><a href="#defending">Module 18</a></p></div>
+</div>
+</section>
+
+<!-- ======================= PROTOCOLS ======================= -->
+<section id="protocols" data-sec>
+<h2>Protocol cheat sheets <small>purpose · flow · attacks · detect · defend</small></h2>
+
+<div class="proto kb" data-f="protocol attack detect defend">
+<h3>NTLM</h3><p class="purpose">Legacy Windows challenge-response authentication. Deprecated; NTLMv1 is removed from the newest Windows versions.</p>
+<dl><dt>Flow</dt><dd>NEGOTIATE → CHALLENGE (random number) → AUTHENTICATE (response computed from the NT hash); the server asks the DC to verify.</dd>
+<dt>Weaknesses</dt><dd>NT hash is as good as the password; no server authentication; no MFA.</dd>
+<dt>Attacks</dt><dd>Pass-the-hash, NTLM relay (with coercion tricks such as PetitPotam), offline cracking.</dd>
+<dt>Detect</dt><dd>4776 NTLM validations where Kerberos is expected; 4624 logon type 3 with NTLM from unusual hosts.</dd>
+<dt>Defend</dt><dd>Audit, then restrict NTLM; SMB signing; LDAP signing and channel binding; EPA; Protected Users group.</dd></dl>
+<p class="src"><a href="#ntlm-kerberos">Module 8</a></p></div>
+
+<div class="proto kb" data-f="protocol attack detect defend">
+<h3>Kerberos</h3><p class="purpose">Ticket-based network authentication through a trusted third party (the KDC on every domain controller).</p>
+<dl><dt>Flow</dt><dd>AS-REQ (pre-auth) → AS-REP (<strong>TGT</strong>, sealed with the krbtgt key) → TGS-REQ (for an SPN) → TGS-REP (<strong>service ticket</strong>, sealed with the service key) → AP-REQ → optional AP-REP (mutual authentication).</dd>
+<dt>Key facts</dt><dd>The PAC carries group memberships; tickets last about 10 hours; clocks must be within 5 minutes; PKINIT adds smart cards and Windows Hello; constrained delegation is OK, unconstrained is dangerous.</dd>
+<dt>Attacks</dt><dd>Kerberoasting, AS-REP roasting, pass-the-ticket, Silver Ticket, Golden Ticket, delegation abuse.</dd>
+<dt>Detect</dt><dd>4769 with RC4 (0x17) across many SPNs; 4768 / 4771 anomalies; TGS without a prior TGT; ticket lifetimes that don't match policy.</dd>
+<dt>Defend</dt><dd>gMSA, AES only, pre-auth on, Credential Guard, Tier 0 isolation, reset krbtgt twice after compromise.</dd></dl>
+<p class="src"><a href="#ntlm-kerberos">Module 8</a></p></div>
+
+<div class="proto kb" data-f="protocol attack detect defend">
+<h3>SAML 2.0</h3><p class="purpose">XML-based browser SSO for enterprise web apps (OASIS, 2005).</p>
+<dl><dt>Setup</dt><dd>Exchange metadata: IdP entity ID, SSO URL and signing certificate ↔ SP entity ID and ACS URL.</dd>
+<dt>Flow</dt><dd>SP → browser redirect with AuthnRequest → IdP login and MFA → signed SAMLResponse auto-POSTed to the ACS URL → SP session. All front channel.</dd>
+<dt>Assertion</dt><dd>Issuer (≈ iss), NameID (≈ sub), Audience (≈ aud), NotOnOrAfter (≈ exp), AuthnContext (≈ amr/acr), attributes.</dd>
+<dt>SP must check</dt><dd>Signature against the stored IdP certificate, issuer, audience, time window, InResponseTo, destination, replay.</dd>
+<dt>Attacks</dt><dd>Golden SAML (stolen signing key), XML signature wrapping, comment injection, weak validation, certificate-expiry outages.</dd>
+<dt>Detect</dt><dd>App sign-ins with no matching IdP sign-in; signing-certificate changes; AD FS configuration exports.</dd>
+<dt>Defend</dt><dd>HSM or cloud IdP for signing keys; mature libraries; SP-initiated flows; certificate expiry tracking.</dd></dl>
+<p class="src"><a href="#saml">Module 11</a></p></div>
+
+<div class="proto kb" data-f="protocol attack detect defend">
+<h3>OAuth 2.0</h3><p class="purpose"><strong>Delegated authorization</strong> for APIs. Not authentication.</p>
+<dl><dt>Grants</dt><dd>Authorization code + PKCE (user present); client credentials (machine to machine); refresh token; device code; token exchange (on behalf of).</dd>
+<dt>Tokens</dt><dd>Access token (minutes to hours, scoped); refresh token (days to months; very valuable).</dd>
+<dt>Attacks</dt><dd>Consent phishing, device-code phishing, refresh-token theft, redirect-URI manipulation, wrong-audience acceptance, leaked client secrets.</dd>
+<dt>Detect</dt><dd>New high-risk consents (<code>Mail.Read</code>, <code>offline_access</code>); unusual device-code sign-ins; new app secrets.</dd>
+<dt>Defend</dt><dd>Admin consent workflow; PKCE; exact redirect URIs; sender-constrained tokens (DPoP, mTLS); certificates or federation instead of secrets; follow the OAuth Security BCP (RFC 9700).</dd></dl>
+<p class="src"><a href="#oauth-oidc">Module 12</a></p></div>
+
+<div class="proto kb" data-f="protocol">
+<h3>OpenID Connect (OIDC)</h3><p class="purpose">Authentication layer on top of OAuth 2.0. Adds the <strong>ID token</strong> (a JWT).</p>
+<dl><dt>Flow</dt><dd>Authorization code + PKCE; tokens are fetched over the back channel, server to server.</dd>
+<dt>ID token claims</dt><dd><code>iss</code>, <code>sub</code>, <code>aud</code>, <code>exp</code>, <code>iat</code>, <code>nonce</code>, <code>amr</code> / <code>acr</code> (how the user authenticated).</dd>
+<dt>Validate</dt><dd>Signature (via the IdP's JWKS), issuer, audience, expiry, nonce.</dd>
+<dt>Remember</dt><dd>A JWT is signed, not encrypted: anyone can read it, so no secrets inside.</dd></dl>
+<p class="src"><a href="#oauth-oidc">Module 12</a></p></div>
+
+<div class="proto kb" data-f="protocol">
+<h3>FIDO2 / WebAuthn / passkeys</h3><p class="purpose">Phishing-resistant public-key authentication.</p>
+<dl><dt>Parts</dt><dd>WebAuthn (browser API, W3C) + CTAP (talks to security keys and phones, FIDO Alliance).</dd>
+<dt>Why it works</dt><dd>The key pair is bound to the website's origin, so the device won't sign for a look-alike site; the server stores only public keys.</dd>
+<dt>Watch</dt><dd>Synced passkeys depend on the security of the cloud account they sync through; recovery flows can reintroduce weak links.</dd></dl>
+<p class="src"><a href="#authn-mfa">Module 5</a></p></div>
+
+<div class="proto kb" data-f="protocol">
+<h3>TOTP</h3><p class="purpose">Time-based one-time passwords (RFC 6238), used by authenticator apps.</p>
+<dl><dt>How</dt><dd>code = last 6 digits of HMAC(shared secret, time ÷ 30 s). Both sides compute it; nothing is sent.</dd>
+<dt>Weakness</dt><dd>Doesn't know which site it's typed into (relayable); a leaked seed or QR code means codes forever.</dd></dl>
+<p class="src"><a href="#authn-mfa">Module 5</a></p></div>
+
+<div class="proto kb" data-f="protocol">
+<h3>SCIM 2.0</h3><p class="purpose">Standard REST API for provisioning and deprovisioning accounts (RFC 7643 / 7644).</p>
+<dl><dt>Why</dt><dd>SSO can't remove accounts; SCIM lets the IdP create, update and disable users and groups in apps automatically.</dd></dl>
+<p class="src"><a href="#lifecycle">Module 9</a></p></div>
+
+<div class="proto kb" data-f="protocol">
+<h3>Other protocols</h3>
+<dl><dt>RADIUS</dt><dd>VPN, Wi-Fi and network devices; the classic place to add MFA to a VPN.</dd>
+<dt>TACACS+</dt><dd>Admin access to network devices, with command logging.</dd>
+<dt>802.1X / EAP</dt><dd>Network access control; best with device certificates (EAP-TLS).</dd>
+<dt>LDAP bind</dt><dd>An app checks passwords against the directory. Not SSO: the app sees your password.</dd>
+<dt>WS-Federation</dt><dd>Older Microsoft web SSO (AD FS).</dd>
+<dt>SSH</dt><dd>Keys or, better, short-lived SSH certificates.</dd></dl>
+<p class="src"><a href="#sso">Module 10</a></p></div>
+
+<div class="proto kb" data-f="protocol nhi">
+<h3>Workload identity (SPIFFE / cloud federation)</h3><p class="purpose">Machines prove <em>what they are</em> through their platform, with no stored secret.</p>
+<dl><dt>Pattern</dt><dd>The platform (GitHub Actions, Kubernetes, a cloud VM) issues a signed token about the workload → it's exchanged for short-lived credentials scoped to exactly that workload.</dd>
+<dt>Examples</dt><dd>AWS IAM roles, Azure managed identities, GCP workload identity federation, GitHub Actions OIDC, SPIFFE / SPIRE SVIDs (X.509 or JWT).</dd></dl>
+<p class="src"><a href="#workloads">Module 24</a></p></div>
+
+<div class="proto kb" data-f="protocol ai">
+<h3>MCP authorization</h3><p class="purpose">How AI agents (MCP clients) get access to remote tool servers.</p>
+<dl><dt>Basis</dt><dd>OAuth 2.1; the client discovers the authorization server from the MCP server's protected-resource metadata (RFC 9728).</dd>
+<dt>Rules</dt><dd>Tokens are issued for that specific server (audience / resource indicators, RFC 8707); servers must not pass client tokens through to other APIs.</dd>
+<dt>Local servers</dt><dd>Run with your own permissions: install only trusted ones and keep confirmations on for anything that writes.</dd></dl>
+<p class="src"><a href="#securing-agents">Module 27</a></p></div>
+</section>
+
+<!-- ======================= MATRIX ======================= -->
+<section id="matrix" data-sec>
+<h2>Attack → detect → defend matrix <small>with MITRE ATT&amp;CK IDs</small></h2>
+<p class="secnote">Each row is searchable on its own. Try "fatigue", "T1558" or "OAuth".</p>
+<div class="kb-tablewrap"><table>
+<tr><th>Attack</th><th>ATT&amp;CK</th><th>Detect</th><th>Defend</th></tr>
+<tr class="kb" data-f="attack detect defend"><td>Password spraying</td><td>T1110.003</td><td>One source failing across many accounts (Entra 50126, 4625)</td><td>MFA, banned passwords, block legacy auth, smart lockout</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>Credential stuffing</td><td>T1110.004</td><td>High failure ratio, bot signals, breached-password hits</td><td>MFA / passkeys, bot management, breached-password checks</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>AiTM phishing</td><td>T1566, T1557</td><td>Sign-in then token reuse from a new IP or ASN; new MFA method soon after</td><td>Phishing-resistant MFA, compliant-device requirement, token binding</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>MFA fatigue</td><td>T1621</td><td>Bursts of denied or ignored pushes, then an approval</td><td>Number matching, FIDO2, alert on push bursts</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>SIM swap</td><td>T1451 (mobile)</td><td>Carrier port alerts; SMS MFA from new devices</td><td>Remove SMS as a factor</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>Help-desk social engineering</td><td>T1656 (impersonation)</td><td>MFA reset followed by a new-device sign-in; resets of admin accounts</td><td>Verified identity for resets, manager approval, callback, in person for admins</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>Session cookie theft (infostealer)</td><td>T1539</td><td>Same session from a new device, IP or ASN</td><td>Short sessions, compliant devices, token protection, EDR</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>OAuth token theft / consent phishing</td><td>T1528</td><td>New consent with high-risk scopes; token use from unusual IPs</td><td>Admin consent workflow, app governance, sender-constrained tokens</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>Attacker registers own MFA / device</td><td>T1098.005</td><td>Entra "User registered security info"; Okta factor activation after risk</td><td>Protect registration with strong auth; Temporary Access Pass for onboarding</td></tr>
+<tr class="kb" data-f="attack detect defend nhi"><td>Add credentials to an app / service principal</td><td>T1098.001</td><td>Audit: "Certificates and secrets management" changes</td><td>Restrict app owners, alert on new credentials, review app permissions</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>Malicious federation / IdP added</td><td>T1484.002</td><td>Federation or routing-rule changes; new domains</td><td>Few super-admins, PAWs, configuration-change alerts</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>Golden SAML</td><td>T1606.002</td><td>App sign-in without a matching IdP event; signing-certificate access</td><td>HSM or cloud IdP; rotate the signing certificate twice after compromise</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>Mailbox forwarding rules</td><td>T1114.003</td><td>New-InboxRule / Set-InboxRule forwarding externally</td><td>Block external auto-forwarding; alert on rules</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>Kerberoasting</td><td>T1558.003</td><td>4769 RC4 (0x17) across many SPNs from one account</td><td>gMSA, AES only, long random passwords, honeypot SPN</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>AS-REP roasting</td><td>T1558.004</td><td>4768 for accounts without pre-auth</td><td>Keep pre-auth enabled</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>Golden Ticket</td><td>T1558.001</td><td>TGS with no prior TGT; abnormal ticket lifetimes; ITDR alerts</td><td>Tier 0 protection; krbtgt reset twice</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>Silver Ticket</td><td>T1558.002</td><td>Service access with no matching 4769 on the DC</td><td>gMSA, rotate service keys, PAC validation</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>Pass-the-hash</td><td>T1550.002</td><td>4624 logon type 9 (seclogo), NTLM from unusual hosts</td><td>Credential Guard, LAPS, restrict admin logons, disable NTLM</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>Pass-the-ticket</td><td>T1550.003</td><td>Tickets used from hosts they weren't issued to</td><td>Credential Guard, tiering</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>NTLM relay / LLMNR poisoning</td><td>T1557.001</td><td>LLMNR / NBT-NS responses from workstations; relayed auth</td><td>Disable LLMNR / NBT-NS; SMB and LDAP signing; EPA</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>DCSync</td><td>T1003.006</td><td>4662 replication rights used by a non-DC</td><td>Limit replication rights; monitor; Tier 0</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>AD CS abuse (certificate templates)</td><td>T1649</td><td>Certificates issued with unusual subjects; 4886 / 4887 on the CA</td><td>Fix templates (ESC findings), treat the CA as Tier 0</td></tr>
+<tr class="kb" data-f="attack detect defend nhi"><td>Leaked secrets in code or logs</td><td>T1552.001</td><td>Secret scanning; honeytokens; key used from a new place</td><td>Vaults, short-lived credentials, workload identity</td></tr>
+<tr class="kb" data-f="attack detect defend"><td>Valid accounts (general)</td><td>T1078</td><td>Behaviour baselines (UEBA), impossible travel, dormant-account use</td><td>Least privilege, lifecycle hygiene, phishing-resistant MFA</td></tr>
+<tr class="kb" data-f="attack detect defend ai"><td>Prompt injection → confused deputy</td><td>(OWASP LLM01)</td><td>Tool calls outside the normal pattern; data egress by an agent</td><td>Tool-boundary authorization, scoped tokens, human approval for high-impact actions</td></tr>
+<tr class="kb" data-f="attack detect defend ai"><td>Deepfake voice or video impersonation</td><td>T1656</td><td>Process anomalies (payment or bank-detail changes, urgent resets)</td><td>Out-of-band verification, dual approval, cryptographic identity</td></tr>
+</table></div>
+</section>
+
+<!-- ======================= DETECTIONS ======================= -->
+<section id="detections" data-sec>
+<h2>Detection library <small>log sources · event IDs · queries</small></h2>
+<p class="secnote">Queries are starting points in KQL (Microsoft Sentinel). Adapt table and field names to your environment and tune thresholds.</p>
+<div class="kb-tablewrap"><table>
+<tr><th>Windows event</th><th>Meaning</th><th>Why it matters</th></tr>
+<tr class="kb" data-f="detect"><td>4624 / 4625</td><td>Logon success / failure</td><td>Logon type 3 = network, 10 = RDP, 9 = new credentials (pass-the-hash indicator)</td></tr>
+<tr class="kb" data-f="detect"><td>4648</td><td>Logon with explicit credentials</td><td>runas-style lateral movement</td></tr>
+<tr class="kb" data-f="detect"><td>4662</td><td>Operation on a directory object</td><td>DCSync (replication GUIDs) from non-DCs</td></tr>
+<tr class="kb" data-f="detect"><td>4672</td><td>Special privileges assigned</td><td>Admin-equivalent logons</td></tr>
+<tr class="kb" data-f="detect"><td>4720 / 4724 / 4738</td><td>User created / password reset / user changed</td><td>Backdoor accounts, takeover</td></tr>
+<tr class="kb" data-f="detect"><td>4728 / 4732 / 4756</td><td>Member added to a global / local / universal group</td><td>Privilege escalation</td></tr>
+<tr class="kb" data-f="detect"><td>4768</td><td>TGT requested</td><td>AS-REP roasting, unusual sources</td></tr>
+<tr class="kb" data-f="detect"><td>4769</td><td>Service ticket requested</td><td>Kerberoasting (RC4 0x17, many SPNs)</td></tr>
+<tr class="kb" data-f="detect"><td>4771</td><td>Kerberos pre-auth failed</td><td>Password guessing over Kerberos</td></tr>
+<tr class="kb" data-f="detect"><td>4776</td><td>NTLM credential validation</td><td>NTLM usage, spraying, pass-the-hash</td></tr>
+<tr class="kb" data-f="detect"><td>5136</td><td>Directory object modified</td><td>ACL and GPO tampering</td></tr>
+</table></div>
+
+<div class="kb-grid" style="margin-top:12px">
+<div class="kb-card kb" data-f="detect"><h3>Password spray (Entra)</h3>
+<pre><code>SigninLogs
+| where TimeGenerated &gt; ago(1h)
+| where ResultType == "50126"
+| summarize Users = dcount(UserPrincipalName)
+    by IPAddress
+| where Users &gt; 20</code></pre></div>
+<div class="kb-card kb" data-f="detect"><h3>Kerberoasting (DC events)</h3>
+<pre><code>SecurityEvent
+| where EventID == 4769
+| where TicketEncryptionType == "0x17"
+| where ServiceName !endswith "$"
+    and ServiceName != "krbtgt"
+| summarize SPNs = dcount(ServiceName)
+    by TargetUserName, IpAddress,
+       bin(TimeGenerated, 1h)
+| where SPNs &gt; 5</code></pre></div>
+<div class="kb-card kb" data-f="detect"><h3>New MFA method registered</h3>
+<pre><code>AuditLogs
+| where OperationName ==
+    "User registered security info"
+| project TimeGenerated,
+    User = tostring(TargetResources[0].userPrincipalName),
+    Result</code></pre><p>Join with risky sign-ins in the previous few hours for a high-confidence alert.</p></div>
+<div class="kb-card kb" data-f="detect"><h3>OAuth consent granted</h3>
+<pre><code>AuditLogs
+| where OperationName == "Consent to application"
+| extend App = tostring(TargetResources[0].displayName)
+| project TimeGenerated, InitiatedBy, App</code></pre></div>
+<div class="kb-card kb" data-f="detect nhi"><h3>New credential on an app</h3>
+<pre><code>AuditLogs
+| where OperationName has
+    "Certificates and secrets management"
+| project TimeGenerated, InitiatedBy,
+    App = tostring(TargetResources[0].displayName)</code></pre></div>
+<div class="kb-card kb" data-f="detect"><h3>External forwarding rules</h3>
+<pre><code>OfficeActivity
+| where Operation in ("New-InboxRule", "Set-InboxRule")
+| where Parameters has_any
+    ("ForwardTo", "RedirectTo", "ForwardAsAttachmentTo")</code></pre></div>
+<div class="kb-card kb" data-f="detect"><h3>Okta events to watch</h3><ul><li><code>user.mfa.okta_verify.deny_push</code>: push denials (fatigue)</li><li><code>user.mfa.factor.activate</code>: new factor</li><li><code>system.idp.lifecycle.create</code>: new identity provider</li><li><code>user.account.privilege.grant</code>: admin granted</li><li><code>policy.lifecycle.update</code>: policy changed</li></ul></div>
+<div class="kb-card kb" data-f="detect"><h3>Always-alert list</h3><ul><li>Any break-glass sign-in</li><li>Sign-in by a terminated user</li><li>Honeytoken use</li><li>Federation or IdP configuration change</li><li>New Global Admin or super-admin</li></ul></div>
+</div>
+</section>
+
+<!-- ======================= PLAYBOOKS ======================= -->
+<section id="playbooks" data-sec>
+<h2>Incident response playbooks <small>evict, don't just reset</small></h2>
+<div class="kb-grid">
+<div class="kb-card kb" data-f="defend incident"><h3>Compromised user account</h3><ol><li>Block sign-in; <strong>revoke sessions and refresh tokens</strong>; reset password</li><li>Remove persistence: MFA methods, OAuth consents, app passwords, inbox rules, devices, PATs, SSH keys, new accounts</li><li>Scope with sign-in and audit logs</li><li>Verify the user out-of-band; re-enrol with FIDO2; clean the device</li><li>Fix the root cause</li></ol></div>
+<div class="kb-card kb" data-f="defend incident"><h3>Stolen token or session</h3><ul><li>Revoke sessions</li><li>Find the infostealer; reimage the device</li><li>Require compliant devices; shorten sessions; token protection</li></ul></div>
+<div class="kb-card kb" data-f="defend incident nhi"><h3>Leaked secret or key</h3><ul><li><strong>Rotate and revoke first</strong></li><li>Search logs for use of the old key</li><li>Hunt for other leaks in the same repo or pipeline</li><li>Verify every copy was rotated (the Cloudflare lesson)</li></ul></div>
+<div class="kb-card kb" data-f="defend incident"><h3>Compromised IdP admin</h3><ul><li>Act from break-glass accounts</li><li>Check federation, IdP routing, new apps and secrets, policy changes, role grants</li><li>Revoke all admin sessions</li></ul></div>
+<div class="kb-card kb" data-f="defend incident"><h3>AD domain compromise</h3><ul><li>Assume total compromise; scope quietly</li><li>Reset krbtgt <strong>twice</strong>, waiting for replication and ticket expiry in between</li><li>Reset all privileged and service accounts; check AD CS</li><li>Possibly rebuild DCs or recover the forest; evict in one coordinated event</li></ul></div>
+<div class="kb-card kb" data-f="defend incident"><h3>Third-party integration breach</h3><ul><li>Revoke the vendor's tokens and keys</li><li>Review what data it accessed</li><li>Re-grant with reduced scopes</li></ul></div>
+</div>
+</section>
+
+<!-- ======================= INCIDENTS ======================= -->
+<section id="incidents" data-sec>
+<h2>Incident case files <small>what happened · identity lesson</small></h2>
+<div class="kb-tablewrap"><table>
+<tr><th>Incident</th><th>Year</th><th>What happened</th><th>Identity lesson</th></tr>
+<tr class="kb" data-f="incident nhi"><td>Capital One</td><td>2019</td><td>SSRF used to pull cloud workload credentials from the instance metadata service</td><td>Protect workload credentials (IMDSv2); least privilege for roles</td></tr>
+<tr class="kb" data-f="incident"><td>SolarWinds (Golden SAML)</td><td>2020</td><td>Stolen AD FS signing keys used to forge SAML tokens</td><td>Signing keys are Tier 0</td></tr>
+<tr class="kb" data-f="incident"><td>Colonial Pipeline</td><td>2021</td><td>Unused VPN account, leaked password, no MFA</td><td>Deprovision; MFA everywhere</td></tr>
+<tr class="kb" data-f="incident nhi"><td>Uber</td><td>2022</td><td>MFA fatigue, then hardcoded PAM admin credentials found in a script</td><td>Number matching; no secrets in scripts</td></tr>
+<tr class="kb" data-f="incident"><td>MGM Resorts</td><td>2023</td><td>Help-desk social engineering, reportedly about $100M impact</td><td>Recovery is part of authentication</td></tr>
+<tr class="kb" data-f="incident nhi"><td>Okta support system</td><td>2023</td><td>Service-account credentials saved in a personal browser profile led to support files holding session tokens</td><td>Human and machine credential hygiene overlap</td></tr>
+<tr class="kb" data-f="incident"><td>Okta customer super-admin attacks</td><td>2023</td><td>Help-desk resets of super-admin MFA, then a malicious second IdP added</td><td>IdP admin resets are a Tier 0 process</td></tr>
+<tr class="kb" data-f="incident nhi"><td>Cloudflare</td><td>2023</td><td>One token and some service-account credentials missed in post-Okta rotation</td><td>Rotation must be complete and verified</td></tr>
+<tr class="kb" data-f="incident"><td>Storm-0558</td><td>2023</td><td>A stolen Microsoft consumer signing key plus a validation flaw let attackers forge tokens for enterprise mail</td><td>Protect signing keys; validate which key signed what</td></tr>
+<tr class="kb" data-f="incident nhi"><td>Microsoft / Midnight Blizzard</td><td>2024</td><td>Password spray on a legacy test account without MFA, then abuse of an old OAuth test app</td><td>Forgotten test identities and apps are attack surface</td></tr>
+<tr class="kb" data-f="incident"><td>Snowflake customers</td><td>2024</td><td>Infostealer credentials on accounts without MFA</td><td>Enforce MFA, don't just offer it</td></tr>
+<tr class="kb" data-f="incident"><td>Change Healthcare</td><td>2024</td><td>Remote-access portal without MFA</td><td>One gap is enough</td></tr>
+<tr class="kb" data-f="incident ai"><td>Arup deepfake</td><td>2024</td><td>About US$25M transferred after a deepfaked video call</td><td>Out-of-band verification for payments</td></tr>
+<tr class="kb" data-f="incident nhi"><td>Internet Archive</td><td>2024</td><td>Exposed, unrotated GitLab token</td><td>Rotate and scan for secrets</td></tr>
+<tr class="kb" data-f="incident nhi"><td>tj-actions/changed-files</td><td>2025</td><td>Compromised GitHub Action dumped CI secrets into logs</td><td>Pipeline dependencies can read pipeline secrets; use OIDC federation</td></tr>
+<tr class="kb" data-f="incident nhi"><td>Salesloft Drift</td><td>2025</td><td>Stolen integration OAuth tokens used to pull data from many Salesforce instances</td><td>Third-party integrations are standing identities into your data</td></tr>
+</table></div>
+</section>
+
+<!-- ======================= NHI & AI ======================= -->
+<section id="nhi-ai" data-sec>
+<h2>NHI and AI quick reference</h2>
+<div class="kb-grid">
+<div class="kb-card kb" data-f="nhi"><h3>OWASP NHI Top 10 (2025)</h3><ol><li>Improper offboarding</li><li>Secret leakage</li><li>Vulnerable third-party NHI</li><li>Insecure authentication</li><li>Overprivileged NHI</li><li>Insecure cloud deployment configurations</li><li>Long-lived secrets</li><li>Environment isolation</li><li>NHI reuse</li><li>Human use of NHI</li></ol><p class="src"><a href="#nhi-risks">Module 23</a></p></div>
+<div class="kb-card kb" data-f="nhi defend"><h3>Secrets maturity ladder</h3><ol start="0"><li>Chaos: hardcoded secrets</li><li>Discover: scanning and inventory with owners</li><li>Vault: secrets manager with rotation</li><li>Dynamic secrets per job</li><li>Secretless: workload identity</li></ol><p class="src"><a href="#workloads">Module 24</a></p></div>
+<div class="kb-card kb" data-f="ai attack"><h3>AI-era threats to identity</h3><ul><li>Flawless AI phishing at scale</li><li>Voice-cloned help-desk calls</li><li>Deepfake meetings</li><li>Deepfaked ID verification (injection attacks)</li><li>Synthetic identities and fake remote hires</li><li>Faster reconnaissance and automation</li></ul><p><strong>Principle:</strong> when appearance can be faked, prove possession of a key.</p><p class="src"><a href="#ai-attacks">Module 25</a></p></div>
+<div class="kb-card kb" data-f="ai defend"><h3>Agent security architecture</h3><ol><li>Registry with owners</li><li>Own workload identity, short-lived credentials</li><li>Delegated tokens carrying both identities (<code>sub</code> + <code>act</code>)</li><li>Authorization at the tool boundary, outside the model</li><li>Tokens scoped per tool</li><li>Human approval for high-impact actions</li><li>Secrets kept out of the context window</li><li>Log every tool call</li><li>Kill switch</li></ol><p><strong>Assume the agent will be tricked.</strong></p><p class="src"><a href="#securing-agents">Module 27</a></p></div>
+<div class="kb-card kb" data-f="ai attack"><h3>Agent-specific threats</h3><ul><li>Indirect prompt injection (confused deputy)</li><li>Excessive agency</li><li>Tool poisoning / malicious MCP servers</li><li>Token passthrough and over-scoping</li><li>Secrets in the context window</li><li>Shared static keys</li><li>Agent-to-agent trust</li><li>Memory poisoning</li><li>Shadow agents</li></ul></div>
+<div class="kb-card kb" data-f="ai defend"><h3>Shadow AI controls</h3><ul><li>Admin consent for OAuth apps</li><li>SSO-only approved AI tools</li><li>Secret scanning for AI provider keys</li><li>Browser-extension management</li><li>DLP for AI destinations</li></ul><p><strong>AI recommends, a human approves</strong> any privileged access change.</p><p class="src"><a href="#ai-defenders">Module 28</a></p></div>
+</div>
+</section>
+
+<!-- ======================= OEM PRODUCTS ======================= -->
+<section id="oem" data-sec>
+<h2>OEM products <small>real vendor implementations of the concepts above</small></h2>
+<p class="secnote">How an actual product solves what the course teaches abstractly. Sourced from Cisco Live session decks (paraphrased, not quoted at length — licensed conference material). One card per vendor deep-dive.</p>
+
+<div class="proto kb" data-f="oem">
+<h3>Cisco Duo: Identity Security (formerly "just MFA")</h3><p class="purpose">Duo's own pitch: it evolved from an MFA tool into a full security-first IAM platform — directory, SSO, passwordless, device trust, automation — without replacing a company's existing IdP.</p>
+<dl>
+<dt>Deployment modes</dt><dd>Three ways to sit in an environment: standalone IAM for companies with no IdP; an identity broker in front of an existing IdP (Entra, Okta, Ping); or an alternate directory just for third parties (contractors, vendors) who shouldn't join the main corporate directory.</dd>
+<dt>True passwordless</dt><dd>Duo Directory removes passwords entirely, including from enrollment and account-recovery flows — the password never exists to begin with, not just "hidden" behind MFA. Works via Duo Directory itself, or synced external directories (Entra, SAML 2.0, on-prem AD). Embedded browsers that don't support WebAuthn get bridged through the Duo Desktop app instead.</dd>
+<dt>Session token theft defense ("Duo Passport")</dt><dd>Strong device binding: the endpoint signs a user+device profile and sends it to Duo's cloud on every app access; if a profile doesn't match what was recorded, the session is treated as suspect. Because the binding is to the device, not just the token, Duo can invalidate a stolen session cookie even after an attacker-in-the-middle (AiTM) phishing attack has already captured it.</dd>
+<dt>Device trust</dt><dd>Two separate checks: <strong>device health</strong> (disk encryption, firewall, password set, OS version, 3rd-party security agent, browser/plugin versions — a posture check) and <strong>trusted endpoints</strong> (does this exact device identifier appear in Duo's device inventory at all — a allow-list check, independent of health).</dd>
+<dt>AD Defense — closing the legacy gap</dt><dd>Most legacy on-prem apps only authenticate via Kerberos or NTLM and can't natively support MFA. Duo's AD Defense inserts itself at the domain controller via a subauthentication filter (a DLL) and intercepts successful Kerberos/NTLM logons before granting access, adding MFA to authentication protocols that were never designed to support it. A separate CLI-protection agent does the same for Windows SSH, sFTP and remote PowerShell specifically — the protocols attackers use for lateral movement and privilege escalation.</dd>
+<dt>Provisioning</dt><dd>SCIM both directions: inbound from Okta/Google Directory to build Duo's own user database, outbound from Duo to downstream apps (Secure Access, Webex). This is the practical mechanism behind the course's lifecycle/SCIM material (Module 9) — a real product doing exactly that create/update/delete flow.</dd>
+</dl>
+<p class="src">Source: Cisco Live BRKSEC-2879, "Duo Identity Security," 2026. See Modules 5 (MFA), 8 (NTLM/Kerberos), 9 (lifecycle/SCIM), 10 (SSO).</p>
+</div>
+
+<div class="proto kb" data-f="oem">
+<h3>Cisco Identity Intelligence (CII, formerly Oort): ITDR and ISPM in practice</h3><p class="purpose">The course names ITDR and ISPM as concepts (Module 18) without a concrete product behind them. This is that product — a real implementation of "detect and respond to identity attacks" and "find standing posture weaknesses" as an acquired, shipping tool.</p>
+<dl>
+<dt>The problem it exists to solve</dt><dd>Most organizations run multiple IdPs at once (Okta, Entra, Duo SSO), each with its own logs and its own partial view. An IdP can only detect what it itself sees — it has no visibility into a different IdP's authentication events for the same user. CII's core pitch is correlation: aggregate authentication events across every IdP into one analytical system, which both surfaces attacks a single IdP would miss and reduces false positives from noisy single-source alerts.</dd>
+<dt>The identity graph</dt><dd>CII builds a graph connecting users, devices, sessions, groups, apps and infrastructure, fed from identity providers, HRIS systems, MDM, and applications — via full inventory sync, delta sync (changed-records-only), or (preferred) near-real-time event streaming. Streaming matters because it's materially faster: a compromised-session detection that's near-instant over streaming can take over 24 hours via periodic API sync — and in that same window, Entra's own alerting can label a real, successful compromise as only "Medium" criticality.</dd>
+<dt>"Checks"</dt><dd>CII's term for a detection rule — explicitly compared to IDS signatures. When collected data matches a check's condition, that check is recorded as failed for that user/account. Checks are tagged to risk frameworks (CIS, NIST, MITRE ATT&CK) and filterable by which IdP they apply to, since not every check works against every provider's data.</dd>
+<dt>Identity Security Posture Management (ISPM) in practice</dt><dd>An organization gets a posture score, benchmarked against similar organizations, tracked as a trend over time — the proactive half of the pitch. Concrete checks it runs: priority accounts (admins) missing MFA, accounts that have never logged in, and tracking real authentication-factor usage against what the organization believes it's enforcing — one quoted example: a CISO certain SMS-based MFA had been fully retired was shown, via the dashboard, that it hadn't been.</dd>
+<dt>Session hijacking detection — a worked AiTM example</dt><dd>The deck walks an Evilginx-style attacker-in-the-middle attack step by step: phishing email → realistic fake Microsoft login page → attacker-controlled proxy captures username, password, and the live MFA-approved session cookie → attacker replays that cookie to access the account, fully bypassing MFA. This is the exact mechanism behind the "stolen session cookie" line in this KB's attack matrix, now with the real product-detection angle: event-streaming from the IdP is what lets CII catch this quickly; without it, detection can take over a day. By default CII runs its checks once daily; "Threat Discovery Mode" can raise that to hourly, but only once streaming and a notification target are configured.</dd>
+<dt>User Trust Level</dt><dd>A single score per user, built from posture, behavior and events over time — explicitly <em>not</em> a real-time risk score, but a longer-horizon approximation other integrated systems (XDR, Secure Access) can act on.</dd>
+<dt>Active Directory specifically</dt><dd>90% of enterprises still run AD. Per Cisco Talos incident-response data cited in the deck, 44% of identity-based attacks specifically target AD — multiple domains, legacy integrations, and generations of accumulated privileged accounts make it a dense attack surface. CII's AD-focused checks include flagging "never logged in" accounts (one customer cleaned up 150 stale AD accounts from this single check) and correlating group membership for privilege-creep detection.</dd>
+</dl>
+<p class="src">Source: Cisco Live BRKSEC-2162, "Identity Intelligence Demystified," 2026. See Module 18 (ITDR, ISPM) and the attack → detect → defend matrix's session-hijacking entries.</p>
+</div>
+</section>
+
+<!-- ======================= NUMBERS ======================= -->
+<section id="numbers" data-sec>
+<h2>Numbers and facts worth remembering</h2>
+<div class="kb-tablewrap"><table>
+<tr><th>Fact</th><th>Value</th></tr>
+<tr class="kb" data-f="protocol"><td>Kerberos ticket default lifetime</td><td>About 10 hours</td></tr>
+<tr class="kb" data-f="protocol"><td>Kerberos maximum clock skew</td><td>5 minutes</td></tr>
+<tr class="kb" data-f="protocol"><td>TOTP time step</td><td>30 seconds, 6 digits</td></tr>
+<tr class="kb" data-f="defend"><td>krbtgt resets after compromise</td><td>Twice (AD keeps current + previous key)</td></tr>
+<tr class="kb" data-f="defend"><td>Permanent Global Admins (Microsoft guidance)</td><td>Fewer than 5</td></tr>
+<tr class="kb" data-f="defend"><td>Break-glass accounts</td><td>2, cloud-only, alert on any use</td></tr>
+<tr class="kb" data-f="nhi"><td>Public TLS certificate max lifetime</td><td>Shrinking in stages toward 47 days by 2029 (CA/Browser Forum)</td></tr>
+<tr class="kb" data-f="protocol"><td>NTLM status</td><td>Deprecated; NTLMv1 removed from the newest Windows versions</td></tr>
+<tr class="kb" data-f="standard"><td>NIST SP 800-63</td><td>Revision 4 finalized 2025; AAL3 needs phishing-resistant, hardware-backed auth</td></tr>
+<tr class="kb" data-f="protocol"><td>Entra error 50126</td><td>Invalid username or password</td></tr>
+<tr class="kb" data-f="oem"><td>Identity-based attacks that target Active Directory specifically</td><td>44% (Cisco Talos IR data, via BRKSEC-2162)</td></tr>
+<tr class="kb" data-f="oem"><td>Breaches where identity was a key component</td><td>60% (Cisco Talos, Year in Review 2024)</td></tr>
+<tr class="kb" data-f="oem nhi"><td>Projected machine-to-human identity ratio</td><td>Up to 92:1 (Forrester, cited BRKSEC-2162)</td></tr>
+<tr class="kb" data-f="oem"><td>Compromised-session detection time, streaming vs. periodic API sync</td><td>Near real-time vs. 24+ hours</td></tr>
+</table></div>
+</section>
+
+<!-- ======================= STANDARDS ======================= -->
+<section id="standards" data-sec>
+<h2>Standards and RFCs</h2>
+<div class="kb-tablewrap"><table>
+<tr><th>Spec</th><th>What</th></tr>
+<tr class="kb" data-f="standard"><td>RFC 4120</td><td>Kerberos V5</td></tr>
+<tr class="kb" data-f="standard"><td>RFC 4226 / 6238</td><td>HOTP / TOTP</td></tr>
+<tr class="kb" data-f="standard"><td>RFC 6749 / 6750</td><td>OAuth 2.0 framework / bearer tokens</td></tr>
+<tr class="kb" data-f="standard"><td>RFC 7519</td><td>JSON Web Token (JWT)</td></tr>
+<tr class="kb" data-f="standard"><td>RFC 7636</td><td>PKCE</td></tr>
+<tr class="kb" data-f="standard"><td>RFC 7643 / 7644</td><td>SCIM schema / protocol</td></tr>
+<tr class="kb" data-f="standard"><td>RFC 8414</td><td>OAuth authorization server metadata</td></tr>
+<tr class="kb" data-f="standard"><td>RFC 8628</td><td>Device authorization grant (device code)</td></tr>
+<tr class="kb" data-f="standard ai"><td>RFC 8693</td><td>Token exchange (<code>act</code> claim for delegation)</td></tr>
+<tr class="kb" data-f="standard"><td>RFC 8705</td><td>Mutual-TLS client auth and certificate-bound tokens</td></tr>
+<tr class="kb" data-f="standard ai"><td>RFC 8707</td><td>Resource indicators (audience-bound tokens)</td></tr>
+<tr class="kb" data-f="standard"><td>RFC 9449</td><td>DPoP (proof-of-possession tokens)</td></tr>
+<tr class="kb" data-f="standard"><td>RFC 9700</td><td>OAuth 2.0 Security Best Current Practice</td></tr>
+<tr class="kb" data-f="standard ai"><td>RFC 9728</td><td>OAuth protected resource metadata (used by MCP)</td></tr>
+<tr class="kb" data-f="standard"><td>OIDC Core 1.0</td><td>OpenID Connect</td></tr>
+<tr class="kb" data-f="standard"><td>SAML 2.0 (OASIS)</td><td>Browser SSO assertions</td></tr>
+<tr class="kb" data-f="standard"><td>WebAuthn (W3C) + CTAP (FIDO)</td><td>Passkeys and security keys</td></tr>
+<tr class="kb" data-f="standard"><td>OpenID Shared Signals (CAEP, RISC)</td><td>Real-time session and risk events</td></tr>
+<tr class="kb" data-f="standard nhi"><td>SPIFFE</td><td>Workload identity (SVIDs)</td></tr>
+<tr class="kb" data-f="standard"><td>NIST SP 800-63-4 / 800-207 / CSF 2.0</td><td>Digital identity / Zero Trust / security framework</td></tr>
+<tr class="kb" data-f="standard"><td>CIS Controls v8 (5 and 6)</td><td>Account and access control management</td></tr>
+<tr class="kb" data-f="standard nhi ai"><td>OWASP NHI Top 10; OWASP LLM Top 10</td><td>NHI risks; LLM and agent risks (e.g. prompt injection, excessive agency)</td></tr>
+</table></div>
+</section>
+
+<!-- ======================= GLOSSARY ======================= -->
+<section id="glossary" data-sec>
+<h2>Glossary <small>my own short definitions</small></h2>
+<dl class="gloss">
+<div class="kb" data-f="concept"><dt>AAL / IAL / FAL</dt><dd>NIST assurance levels: authentication, identity proofing, federation.</dd></div>
+<div class="kb" data-f="concept"><dt>ACS URL</dt><dd>Where an app receives SAML responses.</dd></div>
+<div class="kb" data-f="attack"><dt>AiTM</dt><dd>Phishing proxy that relays login and steals the session.</dd></div>
+<div class="kb" data-f="concept"><dt>Bearer token</dt><dd>Works for whoever holds it, like cash.</dd></div>
+<div class="kb" data-f="defend"><dt>Break-glass account</dt><dd>Emergency admin; alerts on any use.</dd></div>
+<div class="kb" data-f="concept"><dt>CIEM</dt><dd>Cloud entitlement analysis: granted vs used permissions.</dd></div>
+<div class="kb" data-f="concept"><dt>Conditional access</dt><dd>Context-based allow, challenge or block at sign-in.</dd></div>
+<div class="kb" data-f="protocol"><dt>DPoP</dt><dd>Binds a token to a client key so a stolen token alone is useless.</dd></div>
+<div class="kb" data-f="concept"><dt>gMSA</dt><dd>AD service account with a long password Windows rotates automatically.</dd></div>
+<div class="kb" data-f="detect"><dt>Honeytoken</dt><dd>Fake credential; any use is an alert.</dd></div>
+<div class="kb" data-f="concept"><dt>IdP / SP / RP</dt><dd>Identity provider / service provider / relying party.</dd></div>
+<div class="kb" data-f="defend"><dt>ISPM / ITDR</dt><dd>Posture management / threat detection and response for identity.</dd></div>
+<div class="kb" data-f="concept"><dt>JIT / ZSP</dt><dd>Just-in-time access / zero standing privilege.</dd></div>
+<div class="kb" data-f="protocol"><dt>krbtgt</dt><dd>The account whose key seals every TGT.</dd></div>
+<div class="kb" data-f="ai"><dt>MCP</dt><dd>Model Context Protocol: connects AI agents to tools; OAuth 2.1 for remote servers.</dd></div>
+<div class="kb" data-f="concept"><dt>mTLS</dt><dd>Both sides of a connection present certificates.</dd></div>
+<div class="kb" data-f="nhi"><dt>NHI</dt><dd>Non-human identity: service accounts, keys, tokens, workloads, bots, agents.</dd></div>
+<div class="kb" data-f="protocol"><dt>NT hash</dt><dd>Unsalted Windows password hash; enough for NTLM (pass-the-hash).</dd></div>
+<div class="kb" data-f="protocol"><dt>PAC</dt><dd>Group memberships inside a Kerberos ticket.</dd></div>
+<div class="kb" data-f="defend"><dt>PAW</dt><dd>Hardened device used only for admin work.</dd></div>
+<div class="kb" data-f="protocol"><dt>PKCE</dt><dd>Stops stolen OAuth authorization codes being redeemed.</dd></div>
+<div class="kb" data-f="protocol"><dt>PRT</dt><dd>Entra device sign-in token that gives cloud SSO ("the cloud TGT").</dd></div>
+<div class="kb" data-f="ai attack"><dt>Prompt injection</dt><dd>Hidden instructions in content that hijack what an AI does with its access.</dd></div>
+<div class="kb" data-f="protocol"><dt>SPN</dt><dd>Service name Kerberos uses to find a service's key.</dd></div>
+<div class="kb" data-f="defend"><dt>Tier 0</dt><dd>Assets that control identity for everything else.</dd></div>
+<div class="kb" data-f="detect"><dt>UEBA</dt><dd>Behaviour baselining to flag anomalies.</dd></div>
+</dl>
+<p class="src">The full glossary is in the <a href="#course-glossary">course</a>. Add terms here as you learn them, in your own words.</p>
+</section>
+
+<!-- ======================= OPEN QUESTIONS ======================= -->
+<section id="questions" data-sec>
+<h2>Open questions <small>things to research or ask</small></h2>
+<p class="secnote">When something is fuzzy, it goes here. When it's answered, the answer moves into the right section above and the question is ticked off.</p>
+<!-- NEW OPEN QUESTIONS GO DIRECTLY BELOW THIS LINE -->
+<div class="kb-card kb" data-f="learn"><h3>To find out at work</h3><ul><li>Which IdP do we use (Entra ID, Okta, other)? Is AD still on-premises?</li><li>How many Global Admins or super-admins do we have? Is there a break-glass account?</li><li>Do we use phishing-resistant MFA anywhere?</li><li>Which AI tools and connectors are approved, and who reviews OAuth consents?</li></ul></div>
+</section>
+</main>
+
+<footer>
+Personal knowledge base · <code>PA/office/identity/identity.html</code> · Companion to <a href="#tab-course">the course</a>. Facts reflect 2025–2026; re-verify fast-moving areas (AI agents, standards, vendors).
+</footer>
+
+<script>
+(function(){
+  var q=document.getElementById('q'), chips=document.querySelectorAll('.chip'), filter='all';
+  var items=document.querySelectorAll('.kb'), secs=document.querySelectorAll('[data-sec]');
+  function apply(){
+    var term=q.value.trim().toLowerCase(), any=false;
+    items.forEach(function(el){
+      var f=(el.getAttribute('data-f')||'').split(' ');
+      var ok=(filter==='all'||f.indexOf(filter)>-1)&&(!term||el.textContent.toLowerCase().indexOf(term)>-1);
+      el.classList.toggle('hidden',!ok);
+    });
+    secs.forEach(function(s){
+      var vis=s.querySelectorAll('.kb:not(.hidden)').length>0;
+      s.classList.toggle('hidden',!vis); if(vis)any=true;
+      s.querySelectorAll('table').forEach(function(t){
+        var w=t.closest('.kb-tablewrap'); if(w)w.classList.toggle('hidden',!t.querySelector('tr.kb:not(.hidden)'));
+      });
+    });
+    document.getElementById('empty').style.display=any?'none':'block';
+  }
+  q.addEventListener('input',apply);
+  chips.forEach(function(c){c.addEventListener('click',function(){
+    filter=c.getAttribute('data-f');
+    chips.forEach(function(x){x.setAttribute('aria-pressed',x===c?'true':'false');});
+    apply();
+  });});
+})();
+</script>
+
+</div>
+
+<script>
+(() => {
+  const course = document.getElementById("tab-course");
+  const kb = document.getElementById("tab-kb");
+  const btnCourse = document.getElementById("btn-course");
+  const btnKb = document.getElementById("btn-kb");
+  const KEY = "identity-hub-tab";
+
+  function show(which, scrollToHash) {
+    const toCourse = which === "course";
+    course.hidden = !toCourse;
+    kb.hidden = toCourse;
+    btnCourse.classList.toggle("active", toCourse);
+    btnKb.classList.toggle("active", !toCourse);
+    try { localStorage.setItem(KEY, which); } catch (e) {}
+    if (scrollToHash && location.hash) {
+      const el = document.getElementById(location.hash.slice(1));
+      if (el) el.scrollIntoView();
+    }
+  }
+
+  btnCourse.addEventListener("click", () => show("course", false));
+  btnKb.addEventListener("click", () => show("kb", false));
+
+  // Every in-page cross-link (the KB's 36 "Module N" links, the KB<->course
+  // links) is a same-page #hash now. Intercept clicks on those: switch to
+  // whichever tab actually contains the target, then scroll to it -- instead
+  // of the browser trying to scroll to an element that's still hidden.
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const id = a.getAttribute("href").slice(1);
+    const target = document.getElementById(id);
+    if (!target) return;
+    e.preventDefault();
+    if (kb.contains(target)) show("kb", false);
+    else if (course.contains(target)) show("course", false);
+    target.scrollIntoView();
+  });
+
+  // Deep link on load: if the hash points at an id that lives in the KB panel, open that tab.
+  let initial = "course";
+  try { initial = localStorage.getItem(KEY) || "course"; } catch (e) {}
+  if (location.hash) {
+    const target = document.getElementById(location.hash.slice(1));
+    if (target && kb.contains(target)) initial = "kb";
+    else if (target && course.contains(target)) initial = "course";
+  }
+  show(initial, true);
+})();
+</script>
+
 </body>
 </html>

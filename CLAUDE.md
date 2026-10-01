@@ -4,10 +4,11 @@ You are tutoring the owner of this folder through identity management and identi
 
 ## Material
 
-- `identity-learning.html` is the course: 33 modules in 6 phases. Treat it as the syllabus and the source of the current explanations. Published at https://claude.ai/artifact/F9SKy7aoqre6AaReiMnivs, pinned to his claude.ai sidebar (2026-10-01) — republish (Artifact tool, `url` param) after editing it.
+- `identity-learning.html` is the course: 33 modules in 6 phases. Treat it as the syllabus and the source of the current explanations. The real source file -- edit it directly, then rebuild the hub (see below).
 - `progress.md` is the learner's log. Read it at the start of every session to see which module they're on and what's still fuzzy.
-- `identity.html` is the learner's **knowledge base**: the permanent, searchable record of everything learned. Keep it current (see below). Published at https://claude.ai/artifact/1qiEcgjDBvi95HRvZKhMrd, pinned to his claude.ai sidebar (2026-10-01) — republish (Artifact tool, `url` param) after every session that adds to it.
+- `identity.html` is the learner's **knowledge base**: the permanent, searchable record of everything learned. Keep it current (see below). The real source file -- edit it directly, then rebuild the hub (see below).
 - `notes/` holds the learner's own notes. Don't rewrite them; suggest corrections instead.
+- `identity-hub.html` is the two pages above as Course/Knowledge Base tabs in one file (2026-10-01, so he has a single mobile bookmark) -- built by `build_hub.py`, never hand-edited. Published and pinned at https://claude.ai/artifact/FTWKig6rddAdAmvzAh4MmX.
 - `Labs/` holds standalone, numbered hands-on labs (added 2026-10-01) — `Labs/README.md` is the full index across all 6 phases, built as a module cluster is actually reached, not upfront. Each lab is predict → run → explain. **Labs are done in the evening Revision slot, not the morning teaching block** — when teaching a new module in the morning, don't also write or run its lab; flag it as ready for that evening's revision instead. The short inline "Try it" boxes already inside `identity-learning.html` are separate, quick in-lesson prompts — the `Labs/` files are the fuller test of learning.
 
 ## How to teach
@@ -32,11 +33,11 @@ You are tutoring the owner of this folder through identity management and identi
    - If the session produced new knowledge (a new incident, detection, protocol detail, term or fact), add it to the matching section (concepts, protocols, matrix, detections, playbooks, incidents, NHI & AI, numbers, standards, glossary), using the same markup with a `kb` class and `data-f` tags so search and filters work.
    - Add anything still fuzzy below the `NEW OPEN QUESTIONS` marker; when a question is answered, move the answer into the right section and remove the question.
    - Update the "Last updated" and "Course progress" line.
-   - Republish `identity.html` (Artifact tool, `url` https://claude.ai/artifact/1qiEcgjDBvi95HRvZKhMrd) so the pinned sidebar copy stays current.
+   - Run `python3 Office/identity/build_hub.py`, then republish `identity-hub.html` (Artifact tool, `url` https://claude.ai/artifact/FTWKig6rddAdAmvzAh4MmX) so the pinned sidebar copy stays current.
 6. Append a dated entry to `progress.md`: module, what clicked, what's fuzzy, next step. Tick the checklist.
 
 Whenever the learner says "add this to my knowledge base" mid-session, do the same immediately. Never record real secrets, tokens, internal hostnames or personal data in the knowledge base; it's meant to be shareable.
 
 ## Editing the course
 
-When the learner asks to expand a topic, edit `identity-learning.html` in place. Keep its structure: each module is a `<section class="module" id="<stable-slug>">` with a `Module N` label, a big-idea or analogy box, a red `<div class="lens">` Security lens box (attacker's view, detect, defend), "Check yourself" in a `<details>` block, an optional "Try it" lab, and a completion checkbox `data-m="<same slug>"`. Keep section ids stable (they store the learner's progress), renumber the visible "Module N" labels and cross-references when inserting modules, and update the table of contents. Keep the page readable on a phone. Then republish (Artifact tool, `url` https://claude.ai/artifact/F9SKy7aoqre6AaReiMnivs).
+When the learner asks to expand a topic, edit `identity-learning.html` in place. Keep its structure: each module is a `<section class="module" id="<stable-slug>">` with a `Module N` label, a big-idea or analogy box, a red `<div class="lens">` Security lens box (attacker's view, detect, defend), "Check yourself" in a `<details>` block, an optional "Try it" lab, and a completion checkbox `data-m="<same slug>"`. Keep section ids stable (they store the learner's progress), renumber the visible "Module N" labels and cross-references when inserting modules, and update the table of contents. Keep the page readable on a phone. Then run `python3 Office/identity/build_hub.py` and republish `identity-hub.html` (Artifact tool, `url` https://claude.ai/artifact/FTWKig6rddAdAmvzAh4MmX).
