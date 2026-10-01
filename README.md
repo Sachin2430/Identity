@@ -6,11 +6,11 @@ Self-study track on identity management, identity security, non-human identities
 
 | File | Purpose |
 |---|---|
-| `identity-learning.html` | The course: 33 modules in 6 phases, with analogies, diagrams, a Security lens (attack, detect, defend) on every foundation and IAM module, dedicated security, NHI and AI phases, self-checks and labs. Open it in any browser. Tick modules off as you go (progress is saved in that browser). |
-| `identity.html` | Your **knowledge base**: everything learned, condensed and searchable (concepts, protocol cheat sheets, an attack → detect → defend matrix with MITRE IDs, a detection library, IR playbooks, incident files, NHI and AI quick reference, standards, glossary, open questions). Claude adds your session learnings here. |
+| `identity.html` | **One file, everything** (consolidated 2026-10-01). Two tabs: **Course** (33 modules in 6 phases, analogies, diagrams, a Security lens on every foundation and IAM module, dedicated security/NHI/AI phases, self-checks and labs — tick modules off as you go, progress saved in that browser) and **Knowledge Base** (everything learned, condensed and searchable: concepts, protocol cheat sheets, an attack → detect → defend matrix with MITRE IDs, a detection library, IR playbooks, incident files, NHI and AI quick reference, OEM product deep-dives, standards, glossary, open questions — Claude adds your session learnings here). Open it in any browser, published and pinned on your phone. |
 | `CLAUDE.md` | Instructions for Claude on how to tutor you with this material. Claude reads it automatically when you open this folder. |
 | `progress.md` | Your study log: what you finished, what clicked, what's still fuzzy. Claude uses it to pick up where you left off. |
 | `notes/` | Your own notes, one file per module (e.g. `notes/m10-sso.md`). Write them in your own words. |
+| `Labs/` | Standalone, numbered hands-on labs — one per module cluster where a real technical exercise exists, built as you reach it. |
 
 ## Learning goals
 
