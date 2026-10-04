@@ -1,56 +1,55 @@
 # Identity Labs
 
+**One holistic environment, not five disconnected ones (redesigned 2026-10-03, his explicit request — "a holistic lab, not independent different labs").** Earlier this was five separate threads (Entra tenant, parked on-prem AD, a GitHub/Claude self-audit, an AWS account, and Keycloak). Now it's **one self-hosted Keycloak realm, one consistent test user ("Priya," the course's own persona), and every module's use case run against that same running system** — so nothing is a cold start, and everything you learn about the environment in Lab 1 carries into every lab after it.
+
 **Not every module gets a lab** — only where there's a real technical artifact to produce. A module that's pure vocabulary or a reading/mapping exercise doesn't get one; the course's own inline "Try it" box is enough there.
 
-**The labs are connected, not a bag of isolated exercises.** Four threads, each building on its own earlier labs instead of starting cold every time. Every lab below was checked against one bar: **can you actually click through it live, on a real free application, and reproduce it on demand** — not read about it, not run it against sample data someone else generated.
+**Keep every lab minimal but reproducible:** one concrete deliverable per lab, free tools only. Built live with Sachin, one command at a time, same rule as the F_AI labs: Claude generates the commands and explains what each proves; Sachin runs every command himself; results get captured from his real output, never invented.
 
-**Keep every lab minimal but reproducible:** one concrete deliverable per lab, free tools only.
+---
 
-## Thread A: the Priya tenant (Microsoft Entra ID, free)
+## The holistic lab: one Keycloak realm, one Priya
 
-**One-time setup, done as part of Lab 01** — the [Microsoft 365 Developer Program](https://developer.microsoft.com/microsoft-365/dev-program) gives a free sandbox tenant with Entra ID P2 (which is what unlocks PIM in Lab 02 — a paid feature everywhere else, free here). No credit card, auto-renews every 90 days with activity.
+**One-time setup:**
+```bash
+docker run -d --name identity-lab -p 8080:8080 \
+  -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin \
+  quay.io/keycloak/keycloak start-dev
+```
+Minutes, no signup, no credit card, fully disposable (`docker stop identity-lab && docker rm identity-lab` to start clean). Admin console: http://localhost:8080
 
-| # | Lab | Module | Builds on | App |
+| # | Lab | Module | Builds on | What it proves |
 |---|---|---|---|---|
-| 01 | Create the tenant + Priya, enroll her first passkey | M5 — Authentication & MFA | *(starts the thread)* | Entra ID (native) |
-| 02 | Make Priya PIM-eligible for a role, then activate it — real eligible→active, real audit entry | M14 — PAM/PIM | Lab 01's tenant + user | Entra ID PIM (native) |
-| 03 | Register a SAML app, SSO as Priya, capture the real assertion | M10–11 — SSO, SAML | Lab 01's user | **Azure AD SAML Toolkit** — Microsoft's free sample app built specifically for practicing SAML claims, not a placeholder |
-| 04 | Register an OAuth app, run the flow, decode Priya's real ID token | M12 — OAuth 2.0, OIDC | Lab 01's user | Entra app registration (native) + jwt.io |
-| 05 | Filter and export Priya's real sign-in logs — the ones Labs 01/03/04 just generated | M20 — Detection engineering | Labs 01, 03, 04's real log entries | **Light version (decided 2026-10-01):** the Entra portal's own Sign-in logs blade — filter, search, export. No Azure Log Analytics / KQL, no second Azure signup, no card required. Full KQL version stays an explicit later upgrade, not assumed. |
-| 06 | Incident tabletop: "Priya's session is compromised" — actually click **Revoke sessions** on the real user, review the real audit trail | M21 — Incident response | Everything above | Entra ID (native) |
+| 1 | Stand up Keycloak, create a realm, add Priya by hand | M7 — Directories and the source of truth | *(starts the thread)* | A directory is something you build, not a pre-populated tenant you're handed |
+| 2 | Enroll Priya's passkey (WebAuthn), see what's actually stored | M5 — Authentication & MFA | Lab 1's realm + user | What a passkey credential really is on the IdP side |
+| 3 | Register a SAML client, SSO as Priya, capture the real assertion | M10–11 — SSO, SAML | Lab 1 | The real XML assertion Keycloak issues, not a diagram of one |
+| 4 | Register an OIDC client, run the authorization code flow, decode the real ID token | M12 — OAuth 2.0, OIDC | Lab 1 | You control the IdP issuing the token, not just the client side |
+| 5 | Provision and deprovision Priya via the Admin REST API instead of the UI | M9 — The identity lifecycle | Lab 1 | A genuine SCIM-adjacent exercise, not a reading |
+| 6 | Filter Priya's real sign-in events out of Keycloak's own event log — the ones Labs 2–4 just generated | M20 — Identity detection engineering | Labs 2, 3, 4's real events | Detection against real, self-generated log data |
+| 7 | Incident tabletop: "Priya's session is compromised" — actually revoke her real session, review the real audit trail | M21 — Identity incident response | Everything above | A real incident response action, not a hypothetical |
 
-## Thread B: on-prem AD — **parked for now (decided 2026-10-01)**
+Every lab after Lab 1 reuses the same realm and the same Priya — nothing is re-created from scratch, and findings compound (Lab 6's detection literally reads the events Labs 2–4 produced).
 
-Originally planned as Kerberos ticket inspection (M8) + attack-path mapping (M17), sharing one AD lab environment. **Corrected:** a bare Windows client (what the MVP track's UTM VM is) has no domain controller and no Kerberos realm — `klist` against it would show nothing real. A genuine version needs an actual small AD forest: [GOAD (Game of Active Directory)](https://github.com/Orange-Cyberdefense/GOAD), a free Vagrant+Ansible-deployed vulnerable domain, is the honest way to get real tickets for Lab 07 and real BloodHound data (via SharpHound) for Lab 08 from the *same* deployment. That's a heavier one-time setup than anything else here — parked until there's time to actually stand it up, not faked with a lighter substitute that wouldn't produce real data.
+---
 
-| # | Lab | Module | Status |
-|---|---|---|---|
-| 07 | `klist` — inspect a real Kerberos TGT and service ticket | M8 — NTLM/Kerberos | Parked — needs GOAD |
-| 08 | BloodHound / SharpHound — map a real attack path to Domain Admin | M17 — Attack chain | Parked — needs GOAD, same deployment as 07 |
+## What stays separate, and why (not consolidated — different technology, not a shortcut)
 
-## Thread C: your real footprint
-
-| # | Lab | Module | Builds on |
-|---|---|---|---|
-| 09 | Audit your actual GitHub tokens and OAuth app connections | M23 — How NHIs break | Your real GitHub account |
-| 10 | Audit your actual Claude Desktop/Code MCP connector permissions | M27 — Securing AI agents | Your real setup |
-
-## Thread D: cloud IAM (AWS)
-
-| # | Lab | Module | App |
-|---|---|---|---|
-| 11 | Create a real restrictive IAM user + least-privilege policy; try an allowed S3 action and a denied one, watch the real Allow/Deny | M29 — Cloud IAM | AWS Free Tier account (IAM itself is always free; stay inside S3's free tier for the test resource) |
-
-Upgraded 2026-10-01 from "read and annotate a sample policy" — that wasn't a live demo, just reading JSON.
+| Lab | Module | Why it can't fold into the Keycloak environment |
+|---|---|---|
+| Kerberos ticket inspection, BloodHound attack-path mapping | M8 — NTLM/Kerberos, M17 — Attack chain | A real Kerberos ticket needs a real Windows domain controller. Keycloak can't produce one. **Parked** — needs [GOAD (Game of Active Directory)](https://github.com/Orange-Cyberdefense/GOAD), a real small AD forest, not faked with a lighter substitute. |
+| Real IAM Allow/Deny test | M29 — Cloud IAM | AWS IAM is a different paradigm — resource permissions, not an identity provider issuing tokens. Its own small lab: a restrictive IAM user + policy, one allowed S3 action, one denied one, on the AWS Free Tier. |
+| Audit your own GitHub tokens and OAuth app connections | M23 — How NHIs break | This audits *your real account*, not a lab environment — nothing to consolidate. |
+| Audit your own Claude Desktop/Code MCP connector permissions | M27 — Securing AI agents | Same — your real setup, not a simulated one. |
+| PIM (eligible → active role activation) | M14 — PAM/PIM | No honest free equivalent exists on Keycloak (no built-in time-bound role activation). Flagged openly rather than faked. **Optional:** a free Microsoft 365 Developer Program tenant gives real Entra ID P2 (which is what unlocks PIM) if you want this one module's hands-on piece specifically — a deliberate side-trip, not folded into the main thread. |
 
 ## Capstone
 
-Module 33 is already the lab — and should explicitly draw on real findings from Threads A, C and D (a real PIM activation, a real GitHub token gap, a real IAM Deny) as evidence, not hypotheticals.
+Module 33 draws on real findings from the holistic lab plus the separate items above (a real revoked session, a real IAM Deny, a real GitHub token gap) as evidence, not hypotheticals.
 
 ## Modules with no lab
 
-M1–4, 6–7, 9, 13, 15–16, 18–19, 22, 24–26, 28, 30–32 — vocabulary, classification or reading/mapping. The inline "Try it" box covers them where one exists.
+M1–4, 6, 13, 15–16, 18–19, 22, 24–26, 28, 30–32 — vocabulary, classification or reading/mapping. The inline "Try it" box covers them where one exists.
 
 ## How a lab actually gets written
 
-Said in a `/identity` session once you reach it — built then, grounded in what was taught, referencing the real artifacts earlier labs in its thread produced. Each lab states its one concrete deliverable up front and ends with a cross-check against [`../identity.html`](../identity.html).
+Said in a `/identity` session once you reach it — built live, one command at a time, Claude generating the commands and explaining what's about to be proven, Sachin running every command himself and reporting the real result. Each lab states its one concrete deliverable up front and ends with a cross-check against [`../identity.html`](../identity.html). Visual companion pages go in `Work/Identity/Lab_Pages/NN-<slug>/lab.html` (cream/card style, same as the F_AI labs), prompts styled `Lab1:`, `Lab2:` … matching this table's numbering.

@@ -24,16 +24,18 @@ By the end you should be able to:
 6. Handle identity in the age of AI: deepfake-resistant processes, AI-agent identity and authorization, shadow AI, and AI as a defender.
 7. Hold your own with architects, auditors and vendors, and design an identity program (capstone).
 
-## The plan (about 16 weeks, evenings)
+## The plan (about 3 months, daily weekdays)
 
-**Rhythm:** four evenings a week, 45–60 minutes each (about 3–4 hours a week). Longer labs fit a weekend if you want them.
+**Rhythm (updated 2026-10-02, effective 2026-10-03):** weekday mornings, 90 minutes, right after GYM/Exercise. The evening revision pass was dropped in this overhaul. Longer labs fit a weekend if you want them.
 
-| Evening | What to do |
+| Session | What to do |
 |---|---|
 | 1 | Read the next module (25–30 min) |
 | 2 | Explain it back to Claude; answer "Check yourself" |
 | 3 | Security lens: attacker's view, detection, defense; ask Claude to quiz you. Start the next module. |
 | 4 | Lab, then capture takeaways in `identity.html` and one line in `progress.md` |
+
+(Renamed from "Evening" 2026-10-02 — this rotation now runs in the 90-minute morning slot, not the evening.)
 
 | Week | Modules | Focus | Hands-on |
 |---|---|---|---|
